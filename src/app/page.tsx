@@ -30,11 +30,20 @@ export default function Home() {
     <div className="page">
       {/* Sidebar */}
       <aside className="sidebar">
-        <div className="circle gray" />
-        <div className="circle green" />
-        <div className="circle blue" />
-        <div className="circle purple" />
+        <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+        <a href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
+          <img src="/sharepoint-logo.png" alt="SharePoint" className="sidebar-icon" />
+        </a>
+
+        <a href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
+          <img src="/salesforce-logo.png" alt="Salesforce" className="sidebar-icon" />
+        </a>
+
+        <a href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
+          <img src="/preqin-logo.jpg" alt="Preqin" className="sidebar-icon" />
+        </a>
       </aside>
+
 
       {/* Main */}
       <div className="main">
@@ -56,12 +65,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="section">
-          <h2>Manager Database</h2>
-          <p>
-            Search, filter, and compare managers across strategy, asset class, performance,
-            and more to support informed selection and collaboration.
-          </p>
+        <div className="section manager-header">
+          <img src="/database-icon.png" alt="Database" className="section-icon" />
+          <div className="section-text">
+            <h2>Manager Database</h2>
+            <p>
+              Search, filter, and compare managers across strategy, asset class, performance, and more to support informed selection and collaboration.
+            </p>
+          </div>
         </div>
 
         <div className="section">
