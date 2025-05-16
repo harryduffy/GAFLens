@@ -20,3 +20,4 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - Semantic Analysis – use natural language processing to compare qualitative notes across managers to enhance comparison
 - Internal Rating System – let investment team score managers against pre-defined criteria for better comparison etc
 - Statistical Analysis – can execute statistical analysis over all GAF managers (split by invested by GAF and not), such as mean Net IRR, median AUM, Net IRR vs Vintage Year etc.
+- Dashboard Plots – can have cool plots (pie charts, scatter plots, box and whisker plots etc.) on the dashboard, distilling manager information for easy human parsing
