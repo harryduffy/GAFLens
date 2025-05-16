@@ -19,3 +19,4 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - Manager pipeline visualisation – a kanban-style interface showing managers moving through stages (initial meeting, diligence, shortlist, approved etc.)
 - Semantic Analysis – use natural language processing to compare qualitative notes across managers to enhance comparison
 - Internal Rating System – let investment team score managers against pre-defined criteria for better comparison etc
+- Statistical Analysis - can execute statistical analysis over all GAF managers (split by invested by GAF and not), such as mean Net IRR, median AUM, Net IRR vs Vintage Year etc.
