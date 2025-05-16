@@ -4,62 +4,83 @@ import { useEffect, useState } from 'react';
 import './dashboard.css';
 import { useRouter } from 'next/navigation';
 
-type Manager = {
+// Data types
+interface Manager {
   id: number;
   managerName: string;
   region: string;
   currency: string;
   AUM: string;
-};
+  lastMeetingDate?: string;
+  gafAttendees?: string;
+  externalAttendees?: string;
+}
 
 export default function Home() {
   const [managers, setManagers] = useState<Manager[]>([]);
   const router = useRouter();
 
-    useEffect(() => {
-    fetch('/api/managers')
-      .then(res => res.json())
-      .then(data => {
-        console.log('API response:', data);
-        setManagers(data);
-      })
-      .catch(err => console.error('Failed to fetch data', err));
-  }, []);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch('/api/managers');
+        const managers = await res.json();
 
+        const enriched = await Promise.all(
+          managers.map(async (manager: Manager) => {
+            try {
+              const meetingRes = await fetch(`/api/meetings/${encodeURIComponent(manager.managerName)}`);
+              const meetings = await meetingRes.json();
+              if (Array.isArray(meetings) && meetings.length > 0) {
+                const latest = meetings.sort(
+                  (a, b) => new Date(b.meetingDate).getTime() - new Date(a.meetingDate).getTime()
+                )[0];
+
+                return {
+                  ...manager,
+                  lastMeetingDate: new Date(latest.meetingDate).toLocaleDateString(),
+                  gafAttendees: latest.gafAttendees,
+                  externalAttendees: latest.externalAttendees,
+                };
+              }
+            } catch (e) {
+              console.error('Meeting fetch failed for', manager.managerName);
+            }
+            return manager;
+          })
+        );
+
+        setManagers(enriched);
+      } catch (err) {
+        console.error('Failed to fetch data', err);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="page">
-      {/* Sidebar */}
       <aside className="sidebar">
         <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
         <a href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
           <img src="/sharepoint-logo.png" alt="SharePoint" className="sidebar-icon" />
         </a>
-
         <a href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
           <img src="/salesforce-logo.png" alt="Salesforce" className="sidebar-icon" />
         </a>
-
         <a href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
           <img src="/preqin-logo.jpg" alt="Preqin" className="sidebar-icon" />
         </a>
       </aside>
 
-
-      {/* Main */}
       <div className="main">
         <div className="top-bar">
           <div className="search-container">
             <div className="search-box">
               <img src="/search-icon.png" alt="Search" className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search GAF manager database..."
-                className="search-input"
-              />
+              <input type="text" placeholder="Search GAF manager database..." className="search-input" />
             </div>
           </div>
-
           <div className="top-bar-right">
             <button className="create-button">Create Form</button>
             <div className="avatar">DW</div>
@@ -81,17 +102,12 @@ export default function Home() {
             <div className="tools-left">
               <span className="tool-link">Filter</span>
               <span className="tool-link">Sort</span>
-              <span className="tool-link">⋯</span>
+              <span className="tool-link">···</span>
             </div>
-
             <div className="tools-right">
               <div className="search-box">
                 <img src="/search-icon.png" alt="Search" className="search-icon" />
-                <input
-                  type="text"
-                  className="tools-search"
-                  placeholder="Search"
-                />
+                <input type="text" className="tools-search" placeholder="Search" />
               </div>
               <button className="tools-button">New</button>
             </div>
@@ -114,16 +130,12 @@ export default function Home() {
                 {managers.map((m) => (
                   <tr key={m.id} onClick={() => router.push(`/manager/${encodeURIComponent(m.managerName)}`)} className="clickable-row">
                     <td>{m.managerName}</td>
-                    <td>TO DO</td>
+                    <td>{m.lastMeetingDate || '—'}</td>
                     <td>{m.region}</td>
                     <td>{m.currency}</td>
-                    <td>
-                      {m.AUM && !isNaN(parseInt(m.AUM))
-                        ? `$${parseInt(m.AUM).toLocaleString()}`
-                        : '—'}
-                    </td>
-                    <td>TO DO</td>
-                    <td>TO DO</td>
+                    <td>{m.AUM && !isNaN(parseInt(m.AUM)) ? `$${parseInt(m.AUM).toLocaleString()}` : '—'}</td>
+                    <td>{m.gafAttendees || '—'}</td>
+                    <td>{m.externalAttendees || '—'}</td>
                   </tr>
                 ))}
               </tbody>

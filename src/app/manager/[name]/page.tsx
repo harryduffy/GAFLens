@@ -66,7 +66,7 @@ export default function ManagerMeetingsPage() {
           <img src="/database-icon.png" alt="Database" className="section-icon" />
           <div className="section-text">
             <h2>{decodeURIComponent(name as string)} Database</h2>
-            <p>Meeting history for {decodeURIComponent(name as string)}</p>
+            <p>The meeting history for {decodeURIComponent(name as string)}.</p>
           </div>
         </div>
 
