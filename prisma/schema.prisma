@@ -7,14 +7,29 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model ManagerMeeting {
+model Manager {
   id                 Int      @id @default(autoincrement())
   managerName        String
-  lastMeetingDate    DateTime
   region             String
   currency           String
   AUM                BigInt
+}
+
+model ManagerMeetingDetail {
+  id                 Int      @id @default(autoincrement())
+  managerName        String
+  managerCountry     String
+  meetingDate        DateTime
+  managerAUM         BigInt
+  fundName           String
+  fundSize           BigInt
+  assetClasses       String
+  investmentStrategies String
+  fundGeographicFocus String
+  fundTargetNetReturn Int
   gafAttendees       String
   externalAttendees  String
+  notes              String
 }
+
 

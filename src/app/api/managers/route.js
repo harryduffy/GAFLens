@@ -3,23 +3,22 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const meetings = await prisma.managerMeeting.findMany({
-      orderBy: { lastMeetingDate: 'asc' },
-    });
+    const managers = await prisma.manager.findMany();
 
-    const safeMeetings = meetings.map((m) => ({
+    // Convert BigInt values to strings for JSON
+    const safeManagers = managers.map(m => ({
       ...m,
       AUM: m.AUM.toString(),
     }));
 
-    return new Response(JSON.stringify(safeMeetings), {
+    return new Response(JSON.stringify(safeManagers), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   } catch (err) {
     console.error('[API ERROR]', err);
     return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
-      status: 500,
+      status: 500
     });
   }
 }

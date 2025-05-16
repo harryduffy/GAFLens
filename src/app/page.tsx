@@ -1,30 +1,31 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import './dashboard.css';
+import { useRouter } from 'next/navigation';
 
-type ManagerMeeting = {
+type Manager = {
   id: number;
   managerName: string;
-  lastMeetingDate: string;
   region: string;
   currency: string;
   AUM: string;
-  gafAttendees: string;
-  externalAttendees: string;
 };
 
 export default function Home() {
-  const [meetings, setMeetings] = useState<ManagerMeeting[]>([]);
+  const [managers, setManagers] = useState<Manager[]>([]);
+  const router = useRouter();
 
-  useEffect(() => {
+    useEffect(() => {
     fetch('/api/managers')
       .then(res => res.json())
       .then(data => {
         console.log('API response:', data);
-        setMeetings(data);
+        setManagers(data);
       })
       .catch(err => console.error('Failed to fetch data', err));
   }, []);
+
 
   return (
     <div className="page">
@@ -110,10 +111,10 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {meetings.map((m) => (
-                  <tr key={m.id}>
+                {managers.map((m) => (
+                  <tr key={m.id} onClick={() => router.push(`/manager/${encodeURIComponent(m.managerName)}`)} className="clickable-row">
                     <td>{m.managerName}</td>
-                    <td>{new Date(m.lastMeetingDate).toLocaleDateString()}</td>
+                    <td>TO DO</td>
                     <td>{m.region}</td>
                     <td>{m.currency}</td>
                     <td>
@@ -121,8 +122,8 @@ export default function Home() {
                         ? `$${parseInt(m.AUM).toLocaleString()}`
                         : '—'}
                     </td>
-                    <td>{m.gafAttendees}</td>
-                    <td>{m.externalAttendees}</td>
+                    <td>TO DO</td>
+                    <td>TO DO</td>
                   </tr>
                 ))}
               </tbody>
