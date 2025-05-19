@@ -24,6 +24,7 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - Database searching, filtering, sorting etc.
 - Meeting display of data - how to do?
 - Storing documents and images
+- Change OpenAI API key from duffyharry069@gmail.com to another paid GAF account for OpenAI
 
 **Minutes**
 - Change inputs to be GAF and fund specific (everything is fund specific) -> get required fields from Donna
