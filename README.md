@@ -27,8 +27,9 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - Storing documents and images
 
 **Minutes**
-- Change inputs to be GAF and fund specific
+- Change inputs to be GAF and fund specific (everything)
 - Use Fund Name as repopulation identifier (drop down within manager search)
+- Form data and recent meetings summarisation at the bottom (pdf or dashboard)
 
 **Potential Add-Ons**
 - Manager pipeline visualisation – a kanban-style interface showing managers moving through stages (initial meeting, diligence, shortlist, approved etc.)
