@@ -18,7 +18,7 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 **To Do**
 - Enforce types on inputs to reduce human error
 - Make navigation easier (particularly backwards nav)
-- Summarisation (button column on each table? i.e. "summarise"
+- Summarisation (button column on each table? i.e. "summarise")
 - Create drop down for GAF attendees (where you can add GAF personnel)
 - Account creation and authentication
 - Manager drop down to ensure linking with meetings page
