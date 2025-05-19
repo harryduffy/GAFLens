@@ -16,7 +16,7 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - GPT-wrapper Summaries: GPT pre-prompting with Global Alternative Funds context to execute a variety of summarisation pieces (to support IC meetings, guide future meetings etc.)
 
 **To Do**
-- Enforce types on inputs to reduce human error
+- Enforce types on inputs to reduce human error ✅
 - Make navigation easier (particularly backwards nav)
 - Summarisation (button column on each table? i.e. "summarise")
 - Create drop down for GAF attendees (where you can add GAF personnel)
