@@ -16,6 +16,7 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - GPT-wrapper Summaries: GPT pre-prompting with Global Alternative Funds context to execute a variety of summarisation pieces (to support IC meetings, guide future meetings etc.)
 
 **To Do**
+- Change design of Fund Database to just list funds, then you can click into and see: fund meeting history and data
 - Enforce types on inputs to reduce human error ✅
 - Make navigation easier (particularly backwards nav)
 - Summarisation (button column on each table? i.e. "summarise")
