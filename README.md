@@ -32,6 +32,8 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - DD Tier 1, DD Tier 2, DD Tier 3, declined, invested (summary of these on an excel spreadsheet), and a brief tier justification (max 2 sentences, enforce brevity)
 - Investment Strategies populate after Asset Class is selected
 - Scrap the accounts but keep authentication
+- Change to Fund Database
+- Send screenshot of each page to Donna
 
 **Potential Add-Ons**
 - Manager pipeline visualisation – a kanban-style interface showing managers moving through stages (initial meeting, diligence, shortlist, approved etc.)
