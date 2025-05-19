@@ -29,7 +29,9 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 **Minutes**
 - Change inputs to be GAF and fund specific (everything)
 - Use Fund Name as repopulation identifier (drop down within manager search)
-- Form data and recent meetings summarisation at the bottom (pdf or dashboard)
+- Form data and recent meetings summarisation at the bottom (pdf or dashboard)(e.g. recent funds you've looked at within a manager (or by strategy...))
+- DD Tier 1, DD Tier 2, DD Tier 3, declined, invested (summary of these on an excel spreadsheet)
+- Investment Strategies populate after Asset Class is selected
 
 **Potential Add-Ons**
 - Manager pipeline visualisation – a kanban-style interface showing managers moving through stages (initial meeting, diligence, shortlist, approved etc.)
