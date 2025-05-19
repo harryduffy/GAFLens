@@ -20,7 +20,6 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - Make navigation easier (particularly backwards nav)
 - Summarisation (button column on each table? i.e. "summarise")
 - Create drop down for GAF attendees (where you can add GAF personnel)
-- Account creation and authentication
 - Manager drop down to ensure linking with meetings page
 - Database searching, filtering, sorting etc.
 - Meeting display of data - how to do?
@@ -32,6 +31,7 @@ A bespoke Manager Selection Tool built for Global Alternative Funds that guides 
 - Form data and recent meetings summarisation at the bottom (pdf or dashboard)(e.g. recent funds you've looked at within a manager (or by strategy...))
 - DD Tier 1, DD Tier 2, DD Tier 3, declined, invested (summary of these on an excel spreadsheet)
 - Investment Strategies populate after Asset Class is selected
+- Scrap the accounts but keep authentication
 
 **Potential Add-Ons**
 - Manager pipeline visualisation – a kanban-style interface showing managers moving through stages (initial meeting, diligence, shortlist, approved etc.)
