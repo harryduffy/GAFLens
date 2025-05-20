@@ -2,30 +2,35 @@ import fs from 'fs';
 import path from 'path';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-export async function writeSummaryToPDF(summaryText, outputPath, meeting) {
+export async function generateSummaryPDF(summaryText, meeting) {
   const templatePath = path.join(process.cwd(), 'summaries', 'fund_summary-template.pdf');
   const templateBytes = fs.readFileSync(templatePath);
 
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString('en-GB')
   const pdfDoc = await PDFDocument.load(templateBytes);
-  const form = pdfDoc.getForm();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const form = pdfDoc.getForm();
 
-  const fundNameValue = meeting.fundName || '';
-  form.getTextField('fundName').setText(fundNameValue);
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-GB');
+  form.getTextField('dateIssued').setText(formattedDate);
 
-  const fundNameFields = form.getFields().filter(f => f.getName() === 'fundName');
-  fundNameFields.forEach(field => field.setText(fundNameValue));
-  form.getTextField('fundSize').setText(String(meeting.fundSize) || '');
-  form.getTextField('assetClass').setText(meeting.assetClasses || '');
-  form.getTextField('strategy').setText(meeting.investmentStrategies || '');
-  form.getTextField('targetNetIRR').setText(String(meeting.fundTargetNetReturn) + "%" || '');
+  const safe = (val) => val == null ? '' : String(val);
+  const fields = {
+    fundName: safe(meeting.fundName),
+    fundSize: safe(meeting.fundSize),
+    assetClass: safe(meeting.assetClasses),
+    strategy: safe(meeting.investmentStrategies),
+    targetNetIRR: safe(meeting.fundTargetNetReturn) + '%',
+  };
+
+  Object.entries(fields).forEach(([name, value]) => {
+    form.getFields()
+      .filter(f => f.getName() === name)
+      .forEach(f => f.setText(value));
+  });
 
   form.updateFieldAppearances(font);
   form.flatten();
 
-  const pdfBytes = await pdfDoc.save();
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, pdfBytes);
+  return await pdfDoc.save(); // returns Uint8Array buffer
 }

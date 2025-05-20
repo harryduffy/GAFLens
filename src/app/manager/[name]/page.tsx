@@ -108,8 +108,23 @@ export default function ManagerMeetingsPage() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ meeting: m }),
                           });
-                          const data = await res.json();
-                          alert(data.summary);
+
+                          if (!res.ok) {
+                            alert('Failed to generate PDF');
+                            return;
+                          }
+
+                          const blob = await res.blob();
+                          console.log('Blob:', blob.type, blob.size); // should be 'application/pdf' and > 0
+
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `summary-${m.fundName.replace(/\s+/g, '_')}.pdf`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          window.URL.revokeObjectURL(url);
                         }}
                       >
                         Summarise
