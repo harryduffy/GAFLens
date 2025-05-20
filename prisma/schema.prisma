@@ -8,11 +8,24 @@ generator client {
 }
 
 model Manager {
-  id                 Int      @id @default(autoincrement())
-  managerName        String
-  region             String
-  currency           String
-  AUM                BigInt
+  id           Int     @id @default(autoincrement())
+  managerName  String
+  funds        Fund[]
+}
+
+model Fund {
+  id               Int     @id @default(autoincrement())
+  name             String
+  strategy         String
+  assetClass       String
+  targetNetReturn  Int
+  geographicFocus  String
+  size             BigInt
+  currency         String
+  region           String
+
+  managerId        Int
+  manager          Manager @relation(fields: [managerId], references: [id])
 }
 
 model ManagerMeetingDetail {
@@ -20,7 +33,6 @@ model ManagerMeetingDetail {
   managerName        String
   managerCountry     String
   meetingDate        DateTime
-  managerAUM         BigInt
   fundName           String
   fundSize           BigInt
   assetClasses       String

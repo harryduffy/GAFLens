@@ -4,57 +4,36 @@ import { useEffect, useState } from 'react';
 import './dashboard.css';
 import { useRouter } from 'next/navigation';
 
-// Data types
-interface Manager {
+interface Fund {
   id: number;
-  managerName: string;
-  region: string;
+  name: string;
+  strategy: string;
+  assetClass: string;
+  targetNetReturn: number;
+  geographicFocus: string;
+  size: string;
   currency: string;
-  AUM: string;
-  lastMeetingDate?: string;
-  gafAttendees?: string;
-  externalAttendees?: string;
+  region: string;
+  manager: {
+    managerName: string;
+  };
 }
 
 export default function Home() {
-  const [managers, setManagers] = useState<Manager[]>([]);
+  const [funds, setFunds] = useState<Fund[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/managers');
-        const managers = await res.json();
-
-        const enriched = await Promise.all(
-          managers.map(async (manager: Manager) => {
-            try {
-              const meetingRes = await fetch(`/api/meetings/${encodeURIComponent(manager.managerName)}`);
-              const meetings = await meetingRes.json();
-              if (Array.isArray(meetings) && meetings.length > 0) {
-                const latest = meetings.sort(
-                  (a, b) => new Date(b.meetingDate).getTime() - new Date(a.meetingDate).getTime()
-                )[0];
-
-                return {
-                  ...manager,
-                  lastMeetingDate: new Date(latest.meetingDate).toLocaleDateString(),
-                  gafAttendees: latest.gafAttendees,
-                  externalAttendees: latest.externalAttendees,
-                };
-              }
-            } catch (e) {
-              console.error('Meeting fetch failed for', manager.managerName);
-            }
-            return manager;
-          })
-        );
-
-        setManagers(enriched);
+        const res = await fetch('/api/funds');
+        const data = await res.json();
+        setFunds(data);
       } catch (err) {
-        console.error('Failed to fetch data', err);
+        console.error('Failed to fetch funds', err);
       }
     }
+
     fetchData();
   }, []);
 
@@ -78,7 +57,7 @@ export default function Home() {
           <div className="search-container">
             <div className="search-box">
               <img src="/search-icon.png" alt="Search" className="search-icon" />
-              <input type="text" placeholder="Search GAF manager database..." className="search-input" />
+              <input type="text" placeholder="Search GAF fund database..." className="search-input" />
             </div>
           </div>
           <div className="top-bar-right">
@@ -92,7 +71,7 @@ export default function Home() {
           <div className="section-text">
             <h2>Fund Database</h2>
             <p>
-              Search, filter, and compare managers across strategy, asset class, performance, and more to support informed selection and collaboration.
+              Search, filter, and compare funds across strategy, asset class, manager, and more to support informed selection and collaboration.
             </p>
           </div>
         </div>
@@ -117,25 +96,23 @@ export default function Home() {
             <table className="manager-table">
               <thead>
                 <tr>
-                  <th>Manager Name</th>
-                  <th>Last Meeting Date</th>
+                  <th>Fund</th>
+                  <th>Manager</th>
                   <th>Region</th>
                   <th>Currency</th>
-                  <th>AUM</th>
-                  <th>GAF Attendees</th>
-                  <th>External Attendees</th>
+                  <th>Target Return</th>
+                  <th>Size</th>
                 </tr>
               </thead>
               <tbody>
-                {managers.map((m) => (
-                  <tr key={m.id} onClick={() => router.push(`/manager/${encodeURIComponent(m.managerName)}`)} className="clickable-row">
-                    <td>{m.managerName}</td>
-                    <td>{m.lastMeetingDate || '—'}</td>
-                    <td>{m.region}</td>
-                    <td>{m.currency}</td>
-                    <td>{m.AUM && !isNaN(parseInt(m.AUM)) ? `$${parseInt(m.AUM).toLocaleString()}` : '—'}</td>
-                    <td>{m.gafAttendees || '—'}</td>
-                    <td>{m.externalAttendees || '—'}</td>
+                {funds.map((f) => (
+                  <tr key={f.id} className="clickable-row">
+                    <td>{f.name}</td>
+                    <td>{f.manager.managerName}</td>
+                    <td>{f.region}</td>
+                    <td>{f.currency}</td>
+                    <td>{f.targetNetReturn}%</td>
+                    <td>${parseInt(f.size).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

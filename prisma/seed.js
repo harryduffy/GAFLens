@@ -1,92 +1,59 @@
-// prisma/seed.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clear existing data (optional for dev)
-  await prisma.managerMeetingDetail.deleteMany();
+  await prisma.fund.deleteMany();
   await prisma.manager.deleteMany();
 
-  // Seed managers
-  const managers = await prisma.manager.createMany({
+  // Create managers
+  const bain = await prisma.manager.create({ data: { managerName: 'Bain Capital' } });
+  const hg = await prisma.manager.create({ data: { managerName: 'Hg Capital' } });
+  const radical = await prisma.manager.create({ data: { managerName: 'Radical Ventures' } });
+
+  // Create funds
+  await prisma.fund.createMany({
     data: [
       {
-        managerName: 'Bain Capital',
+        name: 'Bain Distressed Opportunities 2020',
+        strategy: 'Buyout, Special Situations',
+        assetClass: 'Private Equity, Credit',
+        targetNetReturn: 18,
+        geographicFocus: 'North America',
+        size: BigInt(4_000_000_000),
+        currency: 'USD',
         region: 'North America',
-        currency: 'USD',
-        AUM: BigInt(100_000_000_000),
+        managerId: bain.id
       },
       {
-        managerName: 'Hg Capital',
-        region: 'Europe',
+        name: 'Hg Saturn 3',
+        strategy: 'Buyout',
+        assetClass: 'Private Equity',
+        targetNetReturn: 15,
+        geographicFocus: 'Europe',
+        size: BigInt(10_000_000_000),
         currency: 'GBP',
-        AUM: BigInt(50_000_000_000),
+        region: 'Europe',
+        managerId: hg.id
       },
       {
-        managerName: 'Radical Ventures',
-        region: 'Global',
+        name: 'Radical AI Fund II',
+        strategy: 'AI-focused',
+        assetClass: 'Venture Capital',
+        targetNetReturn: 25,
+        geographicFocus: 'Global',
+        size: BigInt(1_000_000_000),
         currency: 'USD',
-        AUM: BigInt(5_000_000_000),
+        region: 'Global',
+        managerId: radical.id
       }
     ]
   });
 
-  // Seed manager meeting details
-  await prisma.managerMeetingDetail.createMany({
-    data: [
-      {
-        managerName: 'Bain Capital',
-        managerCountry: 'USA',
-        meetingDate: new Date('2024-03-01'),
-        managerAUM: BigInt(100_000_000_000),
-        fundName: 'Bain Distressed Opportunities 2020',
-        fundSize: BigInt(4_000_000_000),
-        assetClasses: 'Private Equity, Credit',
-        investmentStrategies: 'Buyout, Special Situations',
-        fundGeographicFocus: 'North America',
-        fundTargetNetReturn: 18,
-        gafAttendees: 'DW, PL',
-        externalAttendees: 'HD, SB',
-        notes: 'Strong performance history, aggressive fee terms.'
-      },
-      {
-        managerName: 'Hg Capital',
-        managerCountry: 'UK',
-        meetingDate: new Date('2025-01-15'),
-        managerAUM: BigInt(50_000_000_000),
-        fundName: 'Hg Saturn 3',
-        fundSize: BigInt(10_000_000_000),
-        assetClasses: 'Private Equity',
-        investmentStrategies: 'Buyout',
-        fundGeographicFocus: 'Europe',
-        fundTargetNetReturn: 15,
-        gafAttendees: 'TN',
-        externalAttendees: 'SR',
-        notes: 'Deep dive into B2B SaaS verticals.'
-      },
-      {
-        managerName: 'Radical Ventures',
-        managerCountry: 'Canada',
-        meetingDate: new Date('2025-05-12'),
-        managerAUM: BigInt(5_000_000_000),
-        fundName: 'Radical AI Fund II',
-        fundSize: BigInt(1_000_000_000),
-        assetClasses: 'Venture Capital',
-        investmentStrategies: 'AI-focused',
-        fundGeographicFocus: 'Global',
-        fundTargetNetReturn: 25,
-        gafAttendees: 'DW, PL, TN',
-        externalAttendees: 'HD, BR',
-        notes: 'Focused on large language model applications.'
-      }
-    ]
-  });
-
-  console.log('✅ Seed complete');
+  console.log('✅ Fund and Manager seed complete');
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error(e);
     process.exit(1);
   })
