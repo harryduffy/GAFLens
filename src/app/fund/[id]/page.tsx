@@ -116,6 +116,22 @@ export default function FundMeetingsPage() {
             </div>
         </div>
 
+        {fund && (
+          <div className="section fund-dashboard">
+            <h3>Fund Summary</h3>
+            <div className="dashboard-grid">
+              <div><strong>Strategy:</strong> {fund.strategy}</div>
+              <div><strong>Asset Class:</strong> {fund.assetClass}</div>
+              <div><strong>Target Net Return:</strong> {fund.targetNetReturn}%</div>
+              <div><strong>Geographic Focus:</strong> {fund.geographicFocus}</div>
+              <div><strong>Fund Size:</strong> {fund.size}</div>
+              <div><strong>Currency:</strong> {fund.currency}</div>
+              <div><strong>Region:</strong> {fund.region}</div>
+              <div><strong>Manager Name:</strong> {fund.managerName}</div>
+            </div>
+          </div>
+        )}
+
         <div className="main">
           <div className="section manager-header">
           <img src="/database-icon.png" alt="Database" className="section-icon" />
