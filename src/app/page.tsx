@@ -82,7 +82,7 @@ export default function Home() {
             </div>
           </div>
           <div className="top-bar-right">
-            <button className="create-button">Create Form</button>
+            <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
             <div className="avatar">DW</div>
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function Home() {
         <div className="section manager-header">
           <img src="/database-icon.png" alt="Database" className="section-icon" />
           <div className="section-text">
-            <h2>Manager Database</h2>
+            <h2>Fund Database</h2>
             <p>
               Search, filter, and compare managers across strategy, asset class, performance, and more to support informed selection and collaboration.
             </p>

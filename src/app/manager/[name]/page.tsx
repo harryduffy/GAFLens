@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import '../../dashboard.css';
 
 type MeetingDetail = {
@@ -20,6 +21,7 @@ type MeetingDetail = {
 export default function ManagerMeetingsPage() {
   const { name } = useParams();
   const [meetings, setMeetings] = useState<MeetingDetail[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     if (!name) return;
@@ -57,7 +59,7 @@ export default function ManagerMeetingsPage() {
             </div>
           </div>
           <div className="top-bar-right">
-            <button className="create-button">Create Form</button>
+            <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
             <div className="avatar">DW</div>
           </div>
         </div>
@@ -83,6 +85,7 @@ export default function ManagerMeetingsPage() {
                   <th>Return Target (%)</th>
                   <th>GAF Attendees</th>
                   <th>External Attendees</th>
+                  <th>Summary</th>
                 </tr>
               </thead>
               <tbody>
@@ -96,6 +99,22 @@ export default function ManagerMeetingsPage() {
                     <td>{m.fundTargetNetReturn}%</td>
                     <td>{m.gafAttendees}</td>
                     <td>{m.externalAttendees}</td>
+                    <td>
+                      <button
+                        className="summarise-button"
+                        onClick={async () => {
+                          const res = await fetch('/api/summarise', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ meeting: m }),
+                          });
+                          const data = await res.json();
+                          alert(data.summary);
+                        }}
+                      >
+                        Summarise
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
