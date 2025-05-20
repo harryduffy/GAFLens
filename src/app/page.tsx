@@ -106,7 +106,11 @@ export default function Home() {
               </thead>
               <tbody>
                 {funds.map((f) => (
-                  <tr key={f.id} className="clickable-row">
+                  <tr
+                    key={f.id}
+                    className="clickable-row"
+                    onClick={() => router.push(`/fund/${f.id}`)}
+                  >
                     <td>{f.name}</td>
                     <td>{f.manager.managerName}</td>
                     <td>{f.region}</td>

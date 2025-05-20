@@ -14,34 +14,35 @@ model Manager {
 }
 
 model Fund {
-  id               Int     @id @default(autoincrement())
-  name             String
-  strategy         String
-  assetClass       String
-  targetNetReturn  Int
-  geographicFocus  String
-  size             BigInt
-  currency         String
-  region           String
+  id                 Int     @id @default(autoincrement())
+  name               String
+  strategy           String
+  assetClass         String
+  targetNetReturn    Int
+  geographicFocus    String
+  size               BigInt
+  currency           String
+  region             String
 
-  managerId        Int
-  manager          Manager @relation(fields: [managerId], references: [id])
+  tier               String? 
+  tierJustification  String?
+
+  managerId          Int
+  manager            Manager     @relation(fields: [managerId], references: [id])
+
+  meetings           FundMeetingDetail[]
 }
 
-model ManagerMeetingDetail {
+model FundMeetingDetail {
   id                 Int      @id @default(autoincrement())
-  managerName        String
-  managerCountry     String
   meetingDate        DateTime
-  fundName           String
   fundSize           BigInt
-  assetClasses       String
-  investmentStrategies String
-  fundGeographicFocus String
-  fundTargetNetReturn Int
   gafAttendees       String
   externalAttendees  String
   notes              String
+
+  fundId             Int
+  fund               Fund     @relation(fields: [fundId], references: [id])
 }
 
 

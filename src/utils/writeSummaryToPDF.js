@@ -1,36 +1,55 @@
 import fs from 'fs';
 import path from 'path';
-import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 
-export async function generateSummaryPDF(summaryText, meeting) {
+export async function generateSummaryPDF(summaryText, meeting, fund) {
   const templatePath = path.join(process.cwd(), 'summaries', 'fund_summary-template.pdf');
+  const fontPath = path.join(process.cwd(), 'fonts', 'Garamond.ttf'); // Ensure this exists!
   const templateBytes = fs.readFileSync(templatePath);
+  const fontBytes = fs.readFileSync(fontPath);
 
   const pdfDoc = await PDFDocument.load(templateBytes);
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  pdfDoc.registerFontkit(fontkit);
+
+  const garamondFont = await pdfDoc.embedFont(fontBytes);
   const form = pdfDoc.getForm();
 
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-GB');
-  form.getTextField('dateIssued').setText(formattedDate);
 
-  const safe = (val) => val == null ? '' : String(val);
+  const safe = (val) => (val == null ? '' : String(val));
+  const formatDate = (d) => new Date(d).toLocaleDateString('en-GB');
+  const formatNumber = (n) => n != null ? parseInt(n).toLocaleString('en-US') : '';
+
   const fields = {
-    fundName: safe(meeting.fundName),
-    fundSize: safe(meeting.fundSize),
-    assetClass: safe(meeting.assetClasses),
-    strategy: safe(meeting.investmentStrategies),
-    targetNetIRR: safe(meeting.fundTargetNetReturn) + '%',
+    fundName: safe(fund.name),
+    fundSize: formatNumber(fund.size),
+    fundTier: safe(fund.tier),
+    meetingDate: formatDate(meeting.meetingDate),
+    assetClass: safe(fund.assetClass),
+    strategy: safe(fund.strategy),
+    targetNetIRR: safe(fund.targetNetReturn) + '%',
+    gafAttendees: safe(meeting.gafAttendees),
+    externalAttendees: safe(meeting.externalAttendees),
+    region: safe(fund.region),
+    currency: safe(fund.currency),
+    geographicFocus: safe(fund.geographicFocus),
+    managerName: safe(fund.managerName),
+    notes: safe(meeting.notes),
+    dateIssued: formattedDate,
   };
 
   Object.entries(fields).forEach(([name, value]) => {
     form.getFields()
       .filter(f => f.getName() === name)
-      .forEach(f => f.setText(value));
+      .forEach(f => {
+        f.setText(value);
+        f.updateAppearances(garamondFont);
+      });
   });
 
-  form.updateFieldAppearances(font);
   form.flatten();
 
-  return await pdfDoc.save(); // returns Uint8Array buffer
+  return await pdfDoc.save();
 }

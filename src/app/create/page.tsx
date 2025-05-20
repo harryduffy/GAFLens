@@ -121,9 +121,9 @@ export default function CreateFormPage() {
         <div className="section manager-header">
           <img src="/database-icon.png" alt="Database" className="section-icon" />
           <div className="section-text">
-            <h2>Manager Selection Form</h2>
+            <h2>Fund Selection Form</h2>
             <p>
-              Please complete the form below to standardise manager meeting notes and support comparison, collaboration, and transparency across the selection process.
+              Please complete the form below to standardise fund meeting notes and support comparison, collaboration, and transparency across the selection process.
             </p>
           </div>
         </div>
