@@ -1,6 +1,6 @@
 ## Change Log
 
-**Records Since Last Meeting**
+**Recent Changes**
 
 | Date      | Change |
 | ----------- | ----------- |
