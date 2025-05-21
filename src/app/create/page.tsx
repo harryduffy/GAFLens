@@ -1,10 +1,19 @@
 'use client';
 
 import '../dashboard.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 const EditorClient = dynamic(() => import('../../components/EditorClient'), { ssr: false });
+
+type FundOption = {
+  name: string;
+  managerName?: string;
+  size?: string;
+  targetNetReturn?: number;
+  geographicFocus?: string;
+  notes?: string;
+};
 
 export default function CreateFormPage() {
   const [formData, setFormData] = useState({
@@ -24,23 +33,54 @@ export default function CreateFormPage() {
   });
 
   const [errors, setErrors] = useState({
+    fundName: '',
     managerAUM: '',
     fundSize: '',
-    fundTargetNetReturn: ''
+    fundTargetNetReturn: '',
+    notes: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const [fundOptions, setFundOptions] = useState<FundOption[]>([]);
+
+  useEffect(() => {
+    fetch('/api/funds')
+      .then(res => res.json())
+      .then((data: FundOption[]) => {
+        console.log("Fetched fund options:", data); // 🐞
+        setFundOptions(data);
+      })
+      .catch(err => console.error('Failed to load funds:', err));
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     let error = '';
 
     if (['managerAUM', 'fundSize'].includes(name) && value && isNaN(Number(value))) {
       error = 'Input field requires a number';
     }
+
     if (name === 'fundTargetNetReturn' && value && isNaN(parseFloat(value))) {
       error = 'Input field requires a number';
     }
 
-    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'fundName') {
+      const selectedFund = fundOptions.find(f => f.name === value);
+      setFormData(prev => ({
+        ...prev,
+        fundName: value,
+        managerName: selectedFund?.managerName || '',
+        fundSize: selectedFund?.size || '',
+        fundTargetNetReturn: selectedFund?.targetNetReturn?.toString() || '',
+        fundGeographicFocus: selectedFund?.geographicFocus || '',
+        notes: selectedFund?.notes || ''
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
     setErrors(prev => ({ ...prev, [name]: error }));
   };
 
@@ -75,17 +115,22 @@ export default function CreateFormPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      if (!res.ok) throw new Error('Failed to submit');
+
+      const result = await res.json();
+      console.log('🛠️ Server response:', result);
+
+      if (!res.ok) {
+        throw new Error(result.error || 'Failed to submit');
+      }
+
       alert('Form submitted!');
     } catch (err) {
-      console.error(err);
-      alert('Submission failed');
+      console.error('❌ Submission error:', err);
     }
   };
 
   return (
     <div className="page">
-      {/* Sidebar */}
       <aside className="sidebar">
         <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
         <a href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
@@ -99,7 +144,6 @@ export default function CreateFormPage() {
         </a>
       </aside>
 
-      {/* Main */}
       <div className="main">
         <div className="top-bar">
           <div className="search-container">
@@ -133,12 +177,33 @@ export default function CreateFormPage() {
             <div className="form-left">
               <div className="section-title">Required Fields</div>
               <div className="form-grid">
+                <div className="form-field">
+                  <label>Fund Name</label>
+                  <select
+                    name="fundName"
+                    value={formData.fundName}
+                    onChange={handleChange}
+                    className={errors.fundName ? 'input-error' : ''}
+                  >
+                    <option value="">-- Select a Fund --</option>
+                    {fundOptions
+                      .filter(fund => !!fund.name)
+                      .map((fund, index) => (
+                        <option key={`${fund.name}-${index}`} value={fund.name}>
+                          {fund.name}
+                        </option>
+                    ))}
+                  </select>
+                  {errors.fundName && (
+                    <span className="error-message">{errors.fundName}</span>
+                  )}
+                </div>
+
                 {[
                   { label: 'Manager Name', name: 'managerName', placeholder: 'e.g. Bain Capital' },
                   { label: 'Manager Country', name: 'managerCountry', placeholder: 'e.g. Australia' },
                   { label: 'Date of Meeting', name: 'meetingDate', type: 'date' },
                   { label: 'Manager AUM (USD)', name: 'managerAUM', placeholder: 'e.g. 100,000,000,000' },
-                  { label: 'Fund Name', name: 'fundName', placeholder: 'e.g. Bain Capital Distressed and Special Situations 2019' },
                   { label: 'Fund Size (USD)', name: 'fundSize', placeholder: 'e.g. 2,500,000,000' },
                   { label: 'Fund Geographic Focus', name: 'fundGeographicFocus', placeholder: 'e.g. North America' },
                   { label: 'Fund Target Net IRR', name: 'fundTargetNetReturn', placeholder: 'e.g. 15%' },
