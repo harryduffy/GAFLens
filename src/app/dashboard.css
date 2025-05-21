@@ -477,20 +477,48 @@ body {
 }
 
 .fund-dashboard {
-  margin: 24px 0;
-  background: #f8f9fa;
+  margin: 0;
+  margin-left: 20px;
+  margin-right: 20px;
+  background: white;
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .fund-dashboard h3 {
-  margin-bottom: 12px;
+  font-size: 18px;
+  color: #1a3d5e;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  font-size: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
 }
+
+.dashboard-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-label {
+  font-size: 11px;
+  color: #777;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.dashboard-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+}
+
+.dashboard-divider {
+  border: none;
+  height: 1px;
+  background-color: #ccc;
+  margin: 12px 0 16px;
+}
+

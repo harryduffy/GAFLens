@@ -11,11 +11,12 @@ type MeetingDetail = {
   gafAttendees: string;
   externalAttendees: string;
   notes: string;
-  fundName?: string; // <-- added
+  fundName?: string;
 };
 
 type FundMeta = {
   id: number;
+  fundTier: string;
   name: string;
   strategy: string;
   assetClass: string;
@@ -37,11 +38,14 @@ export default function FundMeetingsPage() {
     if (!id) return;
 
     fetch(`/api/funds/${id}/meetings`)
-      .then(res => res.json())
-      .then(data => {
-        // Store fund info
+      .then(async res => {
+        if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+        const data = await res.json();
+        console.log('✅ Full API response:', data);
+
         setFund({
-          id: parseInt(id as string),
+          id: data.id,
+          fundTier: data.fundTier,
           name: data.fundName,
           strategy: data.strategy,
           assetClass: data.assetClass,
@@ -53,7 +57,6 @@ export default function FundMeetingsPage() {
           managerName: data.managerName
         });
 
-        // Append fundName to each meeting for backend use
         const enrichedMeetings = data.meetings.map((m: any) => ({
           ...m,
           fundName: data.fundName
@@ -61,8 +64,12 @@ export default function FundMeetingsPage() {
 
         setMeetings(enrichedMeetings);
       })
-      .catch(err => console.error('Failed to fetch meetings', err));
+      .catch(err => {
+        console.error('❌ Failed to fetch meetings:', err);
+        alert('Failed to load fund data. See console for details.');
+      });
   }, [id]);
+
 
   const handleSummarise = async (meeting: MeetingDetail) => {
     const res = await fetch('/api/summarise', {
@@ -86,6 +93,8 @@ export default function FundMeetingsPage() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
   };
+
+  const displayValue = (val: any) => (val !== undefined && val !== null && val !== '' ? val : '–');
 
   return (
     <div className="page">
@@ -118,16 +127,43 @@ export default function FundMeetingsPage() {
 
         {fund && (
           <div className="section fund-dashboard">
-            <h3>Fund Summary</h3>
+            <h3>{fund?.name} — Summary</h3>
+            <hr className="dashboard-divider" />
             <div className="dashboard-grid">
-              <div><strong>Strategy:</strong> {fund.strategy}</div>
-              <div><strong>Asset Class:</strong> {fund.assetClass}</div>
-              <div><strong>Target Net Return:</strong> {fund.targetNetReturn}%</div>
-              <div><strong>Geographic Focus:</strong> {fund.geographicFocus}</div>
-              <div><strong>Fund Size:</strong> {fund.size}</div>
-              <div><strong>Currency:</strong> {fund.currency}</div>
-              <div><strong>Region:</strong> {fund.region}</div>
-              <div><strong>Manager Name:</strong> {fund.managerName}</div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Tier</span>
+                <span className="dashboard-value">{displayValue(fund.fundTier)}</span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Asset Class</span>
+                <span className="dashboard-value">{displayValue(fund.assetClass)}</span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Target Net IRR</span>
+                <span className="dashboard-value">{displayValue(fund.targetNetReturn)}%</span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Geographic Focus</span>
+                <span className="dashboard-value">{displayValue(fund.geographicFocus)}</span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Fund Size</span>
+                <span className="dashboard-value">
+                  {fund.size ? `$${Number(fund.size).toLocaleString()}` : '–'}
+                </span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Currency</span>
+                <span className="dashboard-value">{displayValue(fund.currency)}</span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Region</span>
+                <span className="dashboard-value">{displayValue(fund.region)}</span>
+              </div>
+              <div className="dashboard-field">
+                <span className="dashboard-label">Manager Name</span>
+                <span className="dashboard-value">{displayValue(fund.managerName)}</span>
+              </div>
             </div>
           </div>
         )}
@@ -147,9 +183,9 @@ export default function FundMeetingsPage() {
               <thead>
                 <tr>
                   <th>Meeting Date</th>
-                  <th>Fund Size</th>
                   <th>GAF Attendees</th>
                   <th>External Attendees</th>
+                  <th>General Notes</th>
                   <th>Summarise</th>
                 </tr>
               </thead>
@@ -157,9 +193,9 @@ export default function FundMeetingsPage() {
                 {meetings.map((m) => (
                   <tr key={m.id}>
                     <td>{new Date(m.meetingDate).toLocaleDateString()}</td>
-                    <td>${parseInt(m.fundSize).toLocaleString()}</td>
                     <td>{m.gafAttendees}</td>
                     <td>{m.externalAttendees}</td>
+                    <td>{m.notes}</td>
                     <td>
                       <button className="summarise-button" onClick={() => handleSummarise(m)}>
                         Summarise
