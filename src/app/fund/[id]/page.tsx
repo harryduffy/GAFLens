@@ -96,6 +96,42 @@ export default function FundMeetingsPage() {
 
   const displayValue = (val: any) => (val !== undefined && val !== null && val !== '' ? val : '–');
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableFund, setEditableFund] = useState<FundMeta | null>(null);
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch(`/api/funds/${editableFund!.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editableFund)
+      });
+
+      if (!res.ok) throw new Error('Failed to update fund');
+
+      const updated = await res.json();
+
+      // Update full fund state with new values
+      setFund(prev => ({
+        ...prev!,
+        fundTier: updated.tier,
+        size: updated.size,
+        assetClass: updated.assetClass,
+        strategy: updated.strategy,
+        targetNetReturn: updated.targetNetReturn,
+        geographicFocus: updated.geographicFocus,
+        currency: updated.currency,
+        region: updated.region,
+        managerName: updated.managerName
+      }));
+
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert('Could not save changes.');
+    }
+  };
+
   return (
     <div className="page">
       <aside className="sidebar">
@@ -127,44 +163,138 @@ export default function FundMeetingsPage() {
 
         {fund && (
           <div className="section fund-dashboard">
-            <h3>{fund?.name} — Summary</h3>
+            <div className="fund-summary-header">
+              <h3>{fund?.name} — Summary</h3>
+              <button className="edit-button"
+                  onClick={() => {
+                  setEditableFund(fund); // make a working copy
+                  setIsEditing(true);
+                }}
+              >EDIT</button>
+            </div>
             <hr className="dashboard-divider" />
             <div className="dashboard-grid">
               <div className="dashboard-field">
                 <span className="dashboard-label">Tier</span>
-                <span className="dashboard-value">{displayValue(fund.fundTier)}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.fundTier || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, fundTier: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.fundTier)}</span>
+                )}
               </div>
+
               <div className="dashboard-field">
                 <span className="dashboard-label">Asset Class</span>
-                <span className="dashboard-value">{displayValue(fund.assetClass)}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.assetClass || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, assetClass: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.assetClass)}</span>
+                )}
               </div>
+
               <div className="dashboard-field">
                 <span className="dashboard-label">Target Net IRR</span>
-                <span className="dashboard-value">{displayValue(fund.targetNetReturn)}%</span>
+                {isEditing ? (
+                  <input
+                    type="number"
+                    value={editableFund?.targetNetReturn || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, targetNetReturn: parseFloat(e.target.value) || 0 }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.targetNetReturn)}%</span>
+                )}
               </div>
+
               <div className="dashboard-field">
                 <span className="dashboard-label">Geographic Focus</span>
-                <span className="dashboard-value">{displayValue(fund.geographicFocus)}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.geographicFocus || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, geographicFocus: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.geographicFocus)}</span>
+                )}
               </div>
+
               <div className="dashboard-field">
-                <span className="dashboard-label">Fund Size</span>
-                <span className="dashboard-value">
-                  {fund.size ? `$${Number(fund.size).toLocaleString()}` : '–'}
-                </span>
+                <span className="dashboard-label">Fund Size (AUD)</span>
+                {isEditing ? (
+                  <input
+                    type="number"
+                    value={editableFund?.size || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, size: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">
+                    {fund.size ? `$${Number(fund.size).toLocaleString()}` : '–'}
+                  </span>
+                )}
               </div>
+
               <div className="dashboard-field">
                 <span className="dashboard-label">Currency</span>
-                <span className="dashboard-value">{displayValue(fund.currency)}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.currency || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, currency: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.currency)}</span>
+                )}
               </div>
+
               <div className="dashboard-field">
                 <span className="dashboard-label">Region</span>
-                <span className="dashboard-value">{displayValue(fund.region)}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.region || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, region: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.region)}</span>
+                )}
               </div>
+
               <div className="dashboard-field">
                 <span className="dashboard-label">Manager Name</span>
-                <span className="dashboard-value">{displayValue(fund.managerName)}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.managerName || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, managerName: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.managerName)}</span>
+                )}
               </div>
             </div>
+
+            {isEditing && (
+              <div className="edit-controls">
+                <button onClick={handleSave}>Save</button>
+                <button onClick={() => setIsEditing(false)}>Cancel</button>
+              </div>
+            )}
           </div>
         )}
 
