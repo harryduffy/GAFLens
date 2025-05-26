@@ -8,6 +8,7 @@
 | 21/05/2025 | Created editing functionality for funds with a summary section on fund page |
 | 21/05/2025 | Added fund drop down and auto-population of data to forms |
 | 22/05/2025 | Tested a production-level build and it's suuuuper quick! |
+| 26/05/2025 | Added basic and multi-factor authentication |
 
 **All-time Change Records**
 
