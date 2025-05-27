@@ -9,6 +9,7 @@
 | 21/05/2025 | Added fund drop down and auto-population of data to forms |
 | 22/05/2025 | Tested a production-level build and it's suuuuper quick! |
 | 26/05/2025 | Added basic and multi-factor authentication |
+| 27/05/2025 | Integrated the application with Azure for MySQL - a cloud-hosted relational database |
 
 **All-time Change Records**
 
