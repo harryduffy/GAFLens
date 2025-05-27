@@ -1,12 +1,13 @@
-// app/layout.tsx
-
-import { Metadata } from 'next';
+// src/app/layout.tsx
+import { Metadata } from "next";
+import Providers from "../components/Providers";
+import LoadingWrapper from "../components/LoadingWrapper";
 
 export const metadata: Metadata = {
-  title: 'Manager Lens',
-  description: 'Manager database and meetings platform for Global Alternative Funds',
+  title: "Manager Lens",
+  description: "Manager database and meetings platform for Global Alternative Funds",
   icons: {
-    icon: '/favicon.png', // your custom favicon
+    icon: "/favicon.png",
   },
 };
 
@@ -17,7 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <LoadingWrapper>
+          <Providers>{children}</Providers>
+        </LoadingWrapper>
+      </body>
     </html>
   );
 }

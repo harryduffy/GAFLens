@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import '../../dashboard.css';
 
 type MeetingDetail = {
@@ -29,47 +30,46 @@ type FundMeta = {
 };
 
 export default function FundMeetingsPage() {
+  const { data: session, status } = useSession();
   const { id } = useParams();
   const router = useRouter();
   const [meetings, setMeetings] = useState<MeetingDetail[]>([]);
   const [fund, setFund] = useState<FundMeta | null>(null);
 
+  // Redirect unauthenticated users
   useEffect(() => {
-    if (!id) return;
-
-    fetch(`/api/funds/${id}/meetings`)
-      .then(async res => {
-        if (!res.ok) throw new Error(`Failed with status ${res.status}`);
-        const data = await res.json();
-        console.log('✅ Full API response:', data);
-
-        setFund({
-          id: data.id,
-          fundTier: data.fundTier,
-          name: data.fundName,
-          strategy: data.strategy,
-          assetClass: data.assetClass,
-          targetNetReturn: data.targetNetReturn,
-          geographicFocus: data.geographicFocus,
-          size: data.size,
-          currency: data.currency,
-          region: data.region,
-          managerName: data.managerName
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated' && id) {
+      fetch(`/api/funds/${id}/meetings`)
+        .then(async (res) => {
+          if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+          const data = await res.json();
+          setFund({
+            id: data.id,
+            fundTier: data.fundTier,
+            name: data.fundName,
+            strategy: data.strategy,
+            assetClass: data.assetClass,
+            targetNetReturn: data.targetNetReturn,
+            geographicFocus: data.geographicFocus,
+            size: data.size,
+            currency: data.currency,
+            region: data.region,
+            managerName: data.managerName
+          });
+          const enrichedMeetings = data.meetings.map((m: any) => ({
+            ...m,
+            fundName: data.fundName
+          }));
+          setMeetings(enrichedMeetings);
+        })
+        .catch((err) => {
+          console.error('❌ Failed to fetch meetings:', err);
+          alert('Failed to load fund data. See console for details.');
         });
-
-        const enrichedMeetings = data.meetings.map((m: any) => ({
-          ...m,
-          fundName: data.fundName
-        }));
-
-        setMeetings(enrichedMeetings);
-      })
-      .catch(err => {
-        console.error('❌ Failed to fetch meetings:', err);
-        alert('Failed to load fund data. See console for details.');
-      });
-  }, [id]);
-
+    }
+  }, [status, id]);
 
   const handleSummarise = async (meeting: MeetingDetail) => {
     const res = await fetch('/api/summarise', {
@@ -111,8 +111,7 @@ export default function FundMeetingsPage() {
 
       const updated = await res.json();
 
-      // Update full fund state with new values
-      setFund(prev => ({
+      setFund((prev) => ({
         ...prev!,
         fundTier: updated.tier,
         size: updated.size,
@@ -132,6 +131,8 @@ export default function FundMeetingsPage() {
     }
   };
 
+  if (status === 'loading') return <div>Loading...</div>;
+
   return (
     <div className="page">
       <aside className="sidebar">
@@ -147,18 +148,18 @@ export default function FundMeetingsPage() {
         </a>
       </aside>
 
-        <div className="main">
-          <div className="top-bar">
-            <div className="search-container">
-              <div className="search-box">
-                <img src="/search-icon.png" alt="Search" className="search-icon" />
-                <input type="text" placeholder="Search GAF manager database..." className="search-input" />
-              </div>
+      <div className="main">
+        <div className="top-bar">
+          <div className="search-container">
+            <div className="search-box">
+              <img src="/search-icon.png" alt="Search" className="search-icon" />
+              <input type="text" placeholder="Search GAF manager database..." className="search-input" />
             </div>
-            <div className="top-bar-right">
-              <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
-              <div className="avatar">DW</div>
-            </div>
+          </div>
+          <div className="top-bar-right">
+            <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
+            <div className="avatar" onClick={() => signOut()}>Sign Out</div>
+          </div>
         </div>
 
         {fund && (

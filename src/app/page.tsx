@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import './dashboard.css';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import "./dashboard.css";
 
 interface Fund {
   id: number;
@@ -20,22 +21,28 @@ interface Fund {
 }
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const [funds, setFunds] = useState<Fund[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch('/api/funds');
-        const data = await res.json();
-        setFunds(data);
-      } catch (err) {
-        console.error('Failed to fetch funds', err);
+    if (status === "unauthenticated") {
+      router.push("/login");
+    } else if (status === "authenticated") {
+      async function fetchData() {
+        try {
+          const res = await fetch("/api/funds");
+          const data = await res.json();
+          setFunds(data);
+        } catch (err) {
+          console.error("Failed to fetch funds", err);
+        }
       }
+      fetchData();
     }
+  }, [status]);
 
-    fetchData();
-  }, []);
+  if (status === "loading") return <div>Loading...</div>;
 
   return (
     <div className="page">
@@ -61,8 +68,8 @@ export default function Home() {
             </div>
           </div>
           <div className="top-bar-right">
-            <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
-            <div className="avatar">DW</div>
+            <button className="create-button" onClick={() => router.push("/create")}>Create Form</button>
+            <div className="avatar" onClick={() => signOut()}>Sign Out</div>
           </div>
         </div>
 
@@ -88,7 +95,6 @@ export default function Home() {
                 <img src="/search-icon.png" alt="Search" className="search-icon" />
                 <input type="text" className="tools-search" placeholder="Search" />
               </div>
-              <button className="tools-button">New</button>
             </div>
           </div>
 

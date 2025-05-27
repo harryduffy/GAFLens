@@ -3,6 +3,8 @@
 import '../dashboard.css';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const EditorClient = dynamic(() => import('../../components/EditorClient'), { ssr: false });
 
@@ -16,6 +18,9 @@ type FundOption = {
 };
 
 export default function CreateFormPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     managerName: '',
     managerCountry: '',
@@ -42,15 +47,20 @@ export default function CreateFormPage() {
 
   const [fundOptions, setFundOptions] = useState<FundOption[]>([]);
 
+  // Redirect unauthenticated users
   useEffect(() => {
-    fetch('/api/funds')
-      .then(res => res.json())
-      .then((data: FundOption[]) => {
-        console.log("Fetched fund options:", data); // 🐞
-        setFundOptions(data);
-      })
-      .catch(err => console.error('Failed to load funds:', err));
-  }, []);
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated') {
+      fetch('/api/funds')
+        .then(res => res.json())
+        .then((data: FundOption[]) => {
+          console.log("Fetched fund options:", data);
+          setFundOptions(data);
+        })
+        .catch(err => console.error('Failed to load funds:', err));
+    }
+  }, [status]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -129,6 +139,8 @@ export default function CreateFormPage() {
     }
   };
 
+  if (status === 'loading') return <div>Loading...</div>;
+
   return (
     <div className="page">
       <aside className="sidebar">
@@ -158,7 +170,7 @@ export default function CreateFormPage() {
           </div>
           <div className="top-bar-right">
             <button className="create-button" onClick={handleSubmit}>Submit Data</button>
-            <div className="avatar">DW</div>
+            <div className="avatar" onClick={() => signOut()}>Sign Out</div>
           </div>
         </div>
 

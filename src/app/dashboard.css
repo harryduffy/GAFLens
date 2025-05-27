@@ -118,8 +118,8 @@ body {
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid #cb8548;
   background-color: #fdf1d8;
@@ -127,8 +127,9 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 9px;
   color: #b76f34;
+  cursor: pointer;
 }
 
 /* Section */
