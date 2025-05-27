@@ -10,6 +10,8 @@
 | 22/05/2025 | Tested a production-level build and it's suuuuper quick! |
 | 26/05/2025 | Added basic and multi-factor authentication |
 | 27/05/2025 | Integrated the application with Azure for MySQL - a cloud-hosted relational database |
+| 27/05/2025 | Added a custom loading page and 404 Error page |
+| 27/05/2025 | Test deployed the application to Azure |
 
 **All-time Change Records**
 
