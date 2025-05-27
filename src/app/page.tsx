@@ -42,7 +42,9 @@ export default function Home() {
     }
   }, [status]);
 
-  if (status === "loading") return <div>Loading...</div>;
+  if (status === "loading" || status === "unauthenticated") {
+    return null; // or a custom <LoadingSpinner />
+  }
 
   return (
     <div className="page">

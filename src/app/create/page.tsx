@@ -139,7 +139,9 @@ export default function CreateFormPage() {
     }
   };
 
-  if (status === 'loading') return <div>Loading...</div>;
+  if (status === "loading" || status === "unauthenticated") {
+    return null; // prevents page from showing until auth is confirmed
+  }
 
   return (
     <div className="page">
