@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/23659454-e0fa-4e80-9559-a8a468b562ba/resourceGroups/FundLensGroup/providers/Microsoft.Web/sites/fund-lens",
+    "appService.deploySubpath": "."
+}

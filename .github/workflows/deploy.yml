@@ -29,9 +29,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App using ZIP deploy
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'fund-lens'  # Replace with your actual app name
-          slot-name: 'production'
-          package: .
+            app-name: 'fund-lens'
+            package: .
