@@ -8,6 +8,10 @@
 | 21/05/2025 | Created editing functionality for funds with a summary section on fund page |
 | 21/05/2025 | Added fund drop down and auto-population of data to forms |
 | 22/05/2025 | Tested a production-level build and it's suuuuper quick! |
+| 26/05/2025 | Added basic and multi-factor authentication |
+| 27/05/2025 | Integrated the application with Azure for MySQL - a cloud-hosted relational database |
+| 27/05/2025 | Added a custom loading page and 404 Error page |
+| 27/05/2025 | Test deployed the application to Azure |
 
 **All-time Change Records**
 
