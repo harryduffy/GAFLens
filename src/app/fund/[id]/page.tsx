@@ -135,6 +135,13 @@ export default function FundMeetingsPage() {
     return null; // prevents page from showing until auth is confirmed
   };
 
+  const formatNotes = (htmlString: string, limit = 65) => {
+    const strippedText = htmlString.replace(/<[^>]+>/g, ''); // Strip HTML
+    return strippedText.length > limit
+      ? strippedText.substring(0, limit) + '...'
+      : strippedText;
+  };
+
   return (
     <div className="page">
       <aside className="sidebar">
@@ -328,7 +335,7 @@ export default function FundMeetingsPage() {
                     <td>{new Date(m.meetingDate).toLocaleDateString()}</td>
                     <td>{m.gafAttendees}</td>
                     <td>{m.externalAttendees}</td>
-                    <td>{m.notes}</td>
+                    <td>{formatNotes(m.notes)}</td>
                     <td>
                       <button className="summarise-button" onClick={() => handleSummarise(m)}>
                         Summarise
