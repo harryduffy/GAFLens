@@ -165,7 +165,7 @@ export default function CreateFormPage() {
               <img src="/search-icon.png" alt="Search" className="search-icon" />
               <input
                 type="text"
-                placeholder="Search GAF manager database..."
+                placeholder="Search GAF fund database..."
                 className="search-input"
               />
             </div>

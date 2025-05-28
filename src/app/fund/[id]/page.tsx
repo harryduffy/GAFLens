@@ -146,14 +146,14 @@ export default function FundMeetingsPage() {
     <div className="page">
       <aside className="sidebar">
         <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
-        <a href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
-          <img src="/sharepoint-logo.png" alt="SharePoint" className="sidebar-icon" />
+        <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
+          <p>SharePoint</p>
         </a>
-        <a href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
-          <img src="/salesforce-logo.png" alt="Salesforce" className="sidebar-icon" />
+        <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
+          <p>Salesforce</p>
         </a>
-        <a href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
-          <img src="/preqin-logo.jpg" alt="Preqin" className="sidebar-icon" />
+        <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
+          <p>Preqin</p>
         </a>
       </aside>
 
@@ -162,7 +162,7 @@ export default function FundMeetingsPage() {
           <div className="search-container">
             <div className="search-box">
               <img src="/search-icon.png" alt="Search" className="search-icon" />
-              <input type="text" placeholder="Search GAF manager database..." className="search-input" />
+              <input type="text" placeholder="Search GAF fund database..." className="search-input" />
             </div>
           </div>
           <div className="top-bar-right">
