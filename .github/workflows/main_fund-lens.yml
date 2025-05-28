@@ -56,19 +56,3 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4295793535D24396879A2505A67910A6 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_64DF1A904C244D638FCF1D801425701B }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7B7E6CC5B3484B46AF74E348E394C9B5 }}
-
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'fund-lens'
-          slot-name: 'Production'
-          package: .
-          

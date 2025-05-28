@@ -1,6 +1,6 @@
 datasource db {
   provider = "mysql"
-  url      = "mysql://fundslensadmin:g9oBmsbvvEsd@fundlensserver.mysql.database.azure.com:3306/fund_lens_database?sslaccept=strict"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
