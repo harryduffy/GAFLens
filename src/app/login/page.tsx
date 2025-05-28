@@ -6,6 +6,7 @@ import { useState } from "react";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,6 +15,10 @@ export default function LoginPage() {
       password,
       callbackUrl: "/", // redirect to home page after login
     });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -80,23 +85,51 @@ export default function LoginPage() {
             onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
             onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              padding: "12px 16px",
-              fontSize: "14px",
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-              backgroundColor: "#f9fafb",
-              outline: "none",
-              transition: "border-color 0.2s",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
-            onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-          />
+          
+          {/* Password field with show/hide toggle */}
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px 45px 12px 16px", // Extra padding on right for button
+                fontSize: "14px",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                backgroundColor: "#f9fafb",
+                outline: "none",
+                transition: "border-color 0.2s",
+                boxSizing: "border-box"
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                position: "absolute",
+                right: "14px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px",
+                color: "#6b7280",
+                fontSize: "18px",
+                userSelect: "none"
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.color = "#374151")}
+              onMouseOut={(e) => (e.currentTarget.style.color = "#6b7280")}
+            >
+              {showPassword ? "🤌" : "🕵️"}
+            </button>
+          </div>
+
           <button type="submit" style={{
             marginTop: "12px",
             padding: "12px 0",

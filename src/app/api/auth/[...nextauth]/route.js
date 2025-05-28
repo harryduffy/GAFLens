@@ -13,10 +13,18 @@ const handler = NextAuth({
         // ✅ Replace with your secure authentication logic
         if (
           credentials?.username === "harry.duffy@globalalternativefunds.com" &&
-          credentials?.password === "password"
+          credentials?.password === "GAFPWTime001!"
         ) {
           return { id: "1", name: "Harry Duffy", email: "harry.duffy@globalalternativefunds.com" };
         }
+        
+        if (
+          credentials?.username === "donna.willinge@globalalternativefunds.com" &&
+          credentials?.password === "iLoveGAF@82"
+        ) {
+          return { id: "2", name: "Donna Willinge", email: "donna.willinge@globalalternativefunds.com" };
+        }
+        
         // ❌ Invalid credentials
         return null;
       },
