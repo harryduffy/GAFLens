@@ -109,7 +109,7 @@ body {
 .create-button {
   padding: 10px 20px;
   border: 1px solid #fdf1d8;
-  background-color: #cb8548;
+  background-color: #1a3d5e;
   color: white;
   border-radius: 8px;
   font-weight: 500;
@@ -491,12 +491,12 @@ body {
 }
 
 .summarise-button {
-  border: 1px solid #fdf1d8;
-  background-color: #cb8548;
+  border: 1px solid #cb8548;
+  background-color: #fdf1d8;
   padding: 8px 8px;
   border-radius: 8px;
   cursor: pointer;
-  color: white;
+  color: black;
   font-size: 10px;
 }
 .summarise-button:hover {

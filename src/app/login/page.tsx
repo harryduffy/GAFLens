@@ -64,7 +64,7 @@ export default function LoginPage() {
           color: "#111827",
           fontFamily: "system-ui, sans-serif"
         }}>
-          Log in to GAF
+          Fund Lens
         </h2>
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
