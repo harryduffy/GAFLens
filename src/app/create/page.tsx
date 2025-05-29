@@ -257,6 +257,17 @@ export default function CreateFormPage() {
             </div>
           </div>
           <div className="top-bar-right">
+            <button
+              className="create-button"
+              onClick={() => router.back()}
+              style={{
+                borderRadius: "8px",
+                cursor: "pointer",
+                width: "91px"
+              }}
+            >
+              ← Back
+            </button>
             <button className="create-button" onClick={handleSubmit}>Submit Data</button>
             <div className="avatar" onClick={() => signOut()}>Sign Out</div>
           </div>
