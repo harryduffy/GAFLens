@@ -13,6 +13,7 @@
 | 27/05/2025 | Added a custom loading page and 404 Error page |
 | 27/05/2025 | Test deployed the application to Azure |
 | 29/05/2025 | Search functionality working - f(fund name, region, strategy) |
+| 29/05/2025 | Fund table is sortable (numerical and categorical data) |
 
 **All-time Change Records**
 
