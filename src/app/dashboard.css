@@ -243,6 +243,10 @@ body {
   color: #333;
 }
 
+.manager-table th:hover {
+  cursor: pointer;
+}
+
 .manager-table tbody tr:hover {
   background-color: #f9f9f9;
 }

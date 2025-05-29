@@ -27,6 +27,9 @@ export default function Home() {
   const [dropdownQuery, setDropdownQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -35,7 +38,6 @@ export default function Home() {
     }
   }, [status]);
 
-  // Fetch funds for tools-search and general display
   useEffect(() => {
     if (status === "authenticated") {
       async function fetchFunds() {
@@ -47,7 +49,6 @@ export default function Home() {
     }
   }, [status]);
 
-  // tools-search: server search
   useEffect(() => {
     if (status === "authenticated") {
       if (searchQuery === "") {
@@ -71,7 +72,6 @@ export default function Home() {
     }
   }, [searchQuery, status]);
 
-  // Dropdown for top-bar search-input
   const filteredDropdownFunds = funds.filter((fund) =>
     fund.name.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
     fund.strategy.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
@@ -79,15 +79,45 @@ export default function Home() {
     fund.region.toLowerCase().includes(dropdownQuery.toLowerCase())
   );
 
+  const handleSort = (column: string, isNumeric: boolean) => {
+    let direction = "asc";
+    if (sortColumn === column) {
+      direction = sortDirection === "asc" ? "desc" : "asc";
+    }
+    setSortColumn(column);
+    setSortDirection(direction as "asc" | "desc");
+
+    const sorted = [...funds].sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      if (column === "managerName") {
+        aValue = a.manager.managerName;
+        bValue = b.manager.managerName;
+      } else {
+        aValue = a[column as keyof Fund];
+        bValue = b[column as keyof Fund];
+      }
+
+      if (isNumeric) {
+        return direction === "asc"
+          ? Number(aValue) - Number(bValue)
+          : Number(bValue) - Number(aValue);
+      } else {
+        return direction === "asc"
+          ? String(aValue).localeCompare(String(bValue))
+          : String(bValue).localeCompare(String(aValue));
+      }
+    });
+    setFunds(sorted);
+  };
+
   if (status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="page">
       <aside className="sidebar">
-        <div
-          onClick={() => router.push('/')}
-          style={{ cursor: 'pointer' }}
-        >
+        <div onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
           <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
         </div>
         <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
@@ -164,8 +194,7 @@ export default function Home() {
           <div className="tools-bar">
             <div className="tools-left">
               <span className="tool-link">Filter</span>
-              <span className="tool-link">Sort</span>
-              <span className="tool-link">···</span>
+              <span className="tool-link">Export</span>
             </div>
             <div className="tools-right">
               <div className="search-box">
@@ -185,12 +214,12 @@ export default function Home() {
             <table className="manager-table">
               <thead>
                 <tr>
-                  <th>Fund</th>
-                  <th>Manager</th>
-                  <th>Region</th>
-                  <th>Currency</th>
-                  <th>Target Return</th>
-                  <th>Size</th>
+                  <th onClick={() => handleSort("name", false)}>Fund</th>
+                  <th onClick={() => handleSort("managerName", false)}>Manager</th>
+                  <th onClick={() => handleSort("region", false)}>Region</th>
+                  <th onClick={() => handleSort("currency", false)}>Currency</th>
+                  <th onClick={() => handleSort("targetNetReturn", true)}>Target Return</th>
+                  <th onClick={() => handleSort("size", true)}>Size</th>
                 </tr>
               </thead>
               <tbody>

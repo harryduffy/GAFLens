@@ -63,7 +63,6 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onLoadingComplete }) => {
             margin: 0,
             fontFamily: "system-ui, sans-serif"
           }}>
-            Loading...
           </p>
         </div>
       </div>
