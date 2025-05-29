@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 const EditorClient = dynamic(() => import('../../components/EditorClient'), { ssr: false });
 
 type FundOption = {
+  id: number;
   name: string;
   managerName?: string;
   size?: string;
@@ -143,6 +144,32 @@ export default function CreateFormPage() {
     return null; // prevents page from showing until auth is confirmed
   }
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dropdownQuery, setDropdownQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [allFunds, setAllFunds] = useState<FundOption[]>([]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      async function fetchFunds() {
+        try {
+          const res = await fetch("/api/funds");
+          const data = await res.json();
+          setAllFunds(data);
+        } catch (err) {
+          console.error("Failed to load funds:", err);
+        }
+      }
+      fetchFunds();
+    }
+  }, [status]);
+
+  const filteredDropdownFunds = allFunds.filter((fund) =>
+    fund.name.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    (fund.geographicFocus || "").toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    (fund.managerName || "").toLowerCase().includes(dropdownQuery.toLowerCase())
+  );
+
   return (
     <div className="page">
       <aside className="sidebar">
@@ -163,11 +190,65 @@ export default function CreateFormPage() {
           <div className="search-container">
             <div className="search-box">
               <img src="/search-icon.png" alt="Search" className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search GAF fund database..."
-                className="search-input"
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  placeholder="Search GAF fund database..."
+                  className="search-input"
+                  value={dropdownQuery}
+                  onChange={(e) => {
+                    setDropdownQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                />
+                {showDropdown && dropdownQuery.trim() !== "" && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      width: "100%",
+                      backgroundColor: "white",
+                      border: "1px solid #ddd",
+                      borderTop: "none",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      zIndex: 1000,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                      borderBottomLeftRadius: "6px",
+                      borderBottomRightRadius: "6px"
+                    }}
+                  >
+                    {filteredDropdownFunds.length > 0 ? (
+                      filteredDropdownFunds.slice(0, 8).map((fund) => (
+                        <div
+                          key={fund.name}
+                          onClick={() => {
+                            router.push(`/fund/${fund.id}`);
+                            setShowDropdown(false);
+                            setDropdownQuery("");
+                          }}
+                          style={{
+                            padding: "8px 12px",
+                            cursor: "pointer"
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
+                        >
+                          <span style={{ color: "black", fontWeight: "bold" }}>{fund.name}</span>{" "}
+                          <span style={{ color: "grey" }}>
+                            | {fund.geographicFocus}, {fund.managerName}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ padding: "8px 12px", color: "grey" }}>No results</div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="top-bar-right">

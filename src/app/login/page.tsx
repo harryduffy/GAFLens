@@ -8,13 +8,23 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn("credentials", {
+    setErrorMessage(""); // Clear any previous errors
+    const res = await signIn("credentials", {
       username,
       password,
-      callbackUrl: "/", // redirect to home page after login
+      redirect: false // prevent default redirection
     });
+
+    if (res && res.error) {
+      setErrorMessage("Invalid username or password.");
+    } else {
+      // Successful login, redirect manually
+      window.location.href = "/";
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -66,6 +76,12 @@ export default function LoginPage() {
         }}>
           Fund Lens
         </h2>
+
+        {errorMessage && (
+          <div style={{ color: "red", marginBottom: "10px", fontSize: "0.875rem" }}>
+            {errorMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <input

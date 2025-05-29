@@ -142,6 +142,46 @@ export default function FundMeetingsPage() {
       : strippedText;
   };
 
+  const [allFunds, setAllFunds] = useState<FundMeta[]>([]);
+  const [dropdownQuery, setDropdownQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      async function fetchFunds() {
+        try {
+          const res = await fetch("/api/funds");
+          const data = await res.json();
+          // Convert for compatibility
+          const formatted = data.map((f: any) => ({
+            id: f.id,
+            fundTier: f.tier || "",
+            name: f.name,
+            strategy: f.strategy,
+            assetClass: f.assetClass,
+            targetNetReturn: f.targetNetReturn,
+            geographicFocus: f.geographicFocus,
+            size: f.size,
+            currency: f.currency,
+            region: f.region,
+            managerName: f.manager.managerName
+          }));
+          setAllFunds(formatted);
+        } catch (err) {
+          console.error("❌ Failed to load funds for search:", err);
+        }
+      }
+      fetchFunds();
+    }
+  }, [status]);
+
+  const filteredDropdownFunds = allFunds.filter((fund) =>
+    fund.name.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    fund.strategy.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    fund.geographicFocus.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    fund.region.toLowerCase().includes(dropdownQuery.toLowerCase())
+  );
+
   return (
     <div className="page">
       <aside className="sidebar">
@@ -162,7 +202,64 @@ export default function FundMeetingsPage() {
           <div className="search-container">
             <div className="search-box">
               <img src="/search-icon.png" alt="Search" className="search-icon" />
-              <input type="text" placeholder="Search GAF fund database..." className="search-input" />
+              <div style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  placeholder="Search GAF fund database..."
+                  className="search-input"
+                  value={dropdownQuery}
+                  onChange={(e) => {
+                    setDropdownQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                />
+
+                {showDropdown && dropdownQuery.trim() !== "" && (
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    minWidth: "100%",   // Match the input width
+                    backgroundColor: "white",
+                    border: "1px solid #ddd",
+                    borderTop: "none",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    zIndex: 1000,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    borderBottomLeftRadius: "6px",
+                    borderBottomRightRadius: "6px"
+                  }}>
+                    {filteredDropdownFunds.length > 0 ? (
+                      filteredDropdownFunds.slice(0, 8).map((fund) => (
+                        <div
+                          key={fund.id}
+                          onClick={() => {
+                            router.push(`/fund/${fund.id}`);
+                            setShowDropdown(false);
+                            setDropdownQuery("");
+                          }}
+                          style={{
+                            padding: "8px 12px",
+                            cursor: "pointer"
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
+                        >
+                          <span style={{ color: "black", fontWeight: "bold" }}>{fund.name}</span>{" "}
+                          <span style={{ color: "grey" }}>
+                            | {fund.region}, {fund.strategy}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ padding: "8px 12px", color: "grey" }}>No results</div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="top-bar-right">
