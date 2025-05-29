@@ -15,12 +15,15 @@ export async function GET(req) {
       }
     });
   } else {
-    // Search only in fund name - remove mode
+    // Search in name, strategy, geographicFocus, region
     funds = await prisma.fund.findMany({
       where: {
-        name: {
-          contains: searchQuery
-        }
+        OR: [
+          { name: { contains: searchQuery } },
+          { strategy: { contains: searchQuery } },
+          { geographicFocus: { contains: searchQuery } },
+          { region: { contains: searchQuery } }
+        ]
       },
       include: {
         manager: true

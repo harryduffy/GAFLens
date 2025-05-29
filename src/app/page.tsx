@@ -73,7 +73,10 @@ export default function Home() {
 
   // Dropdown for top-bar search-input
   const filteredDropdownFunds = funds.filter((fund) =>
-    fund.name.toLowerCase().includes(dropdownQuery.toLowerCase())
+    fund.name.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    fund.strategy.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    fund.geographicFocus.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
+    fund.region.toLowerCase().includes(dropdownQuery.toLowerCase())
   );
 
   if (status === "loading" || status === "unauthenticated") return null;
@@ -124,7 +127,10 @@ export default function Home() {
                         setDropdownQuery("");
                       }}
                     >
-                      {fund.name}
+                      <span style={{ color: "black", fontWeight: "bold" }}>{fund.name}</span>{" "}
+                      <span style={{ color: "grey" }}>
+                        | {fund.region}, {fund.strategy}
+                      </span>
                     </div>
                   ))
                 ) : (
