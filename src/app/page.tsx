@@ -23,28 +23,60 @@ interface Fund {
 export default function Home() {
   const { data: session, status } = useSession();
   const [funds, setFunds] = useState<Fund[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dropdownQuery, setDropdownQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
-    } else if (status === "authenticated") {
-      async function fetchData() {
-        try {
-          const res = await fetch("/api/funds");
-          const data = await res.json();
-          setFunds(data);
-        } catch (err) {
-          console.error("Failed to fetch funds", err);
-        }
-      }
-      fetchData();
     }
   }, [status]);
 
-  if (status === "loading" || status === "unauthenticated") {
-    return null; // or a custom <LoadingSpinner />
-  }
+  // Fetch funds for tools-search and general display
+  useEffect(() => {
+    if (status === "authenticated") {
+      async function fetchFunds() {
+        const res = await fetch("/api/funds");
+        const data = await res.json();
+        setFunds(data);
+      }
+      fetchFunds();
+    }
+  }, [status]);
+
+  // tools-search: server search
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (searchQuery === "") {
+        (async () => {
+          const res = await fetch("/api/funds");
+          const data = await res.json();
+          setFunds(data);
+        })();
+      } else {
+        const delayDebounce = setTimeout(async () => {
+          try {
+            const res = await fetch(`/api/funds?q=${encodeURIComponent(searchQuery)}`);
+            const data = await res.json();
+            setFunds(data);
+          } catch (err) {
+            console.error("Failed to search funds", err);
+          }
+        }, 300);
+        return () => clearTimeout(delayDebounce);
+      }
+    }
+  }, [searchQuery, status]);
+
+  // Dropdown for top-bar search-input
+  const filteredDropdownFunds = funds.filter((fund) =>
+    fund.name.toLowerCase().includes(dropdownQuery.toLowerCase())
+  );
+
+  if (status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="page">
@@ -63,11 +95,43 @@ export default function Home() {
 
       <div className="main">
         <div className="top-bar">
-          <div className="search-container">
+          <div className="search-container" style={{ position: "relative" }}>
             <div className="search-box">
               <img src="/search-icon.png" alt="Search" className="search-icon" />
-              <input type="text" placeholder="Search GAF fund database..." className="search-input" />
+              <input
+                type="text"
+                placeholder="Search GAF fund database..."
+                className="search-input"
+                value={dropdownQuery}
+                onChange={(e) => {
+                  setDropdownQuery(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              />
             </div>
+            {showDropdown && dropdownQuery.trim() !== "" && (
+              <div className="dropdown-results">
+                {filteredDropdownFunds.length > 0 ? (
+                  filteredDropdownFunds.slice(0, 8).map((fund) => (
+                    <div
+                      key={fund.id}
+                      className="dropdown-item"
+                      onClick={() => {
+                        router.push(`/fund/${fund.id}`);
+                        setShowDropdown(false);
+                        setDropdownQuery("");
+                      }}
+                    >
+                      {fund.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="dropdown-item">No results</div>
+                )}
+              </div>
+            )}
           </div>
           <div className="top-bar-right">
             <button className="create-button" onClick={() => router.push("/create")}>Create Form</button>
@@ -95,7 +159,13 @@ export default function Home() {
             <div className="tools-right">
               <div className="search-box">
                 <img src="/search-icon.png" alt="Search" className="search-icon" />
-                <input type="text" className="tools-search" placeholder="Search" />
+                <input
+                  type="text"
+                  className="tools-search"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
             </div>
           </div>

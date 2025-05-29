@@ -12,6 +12,7 @@
 | 27/05/2025 | Integrated the application with Azure for MySQL - a cloud-hosted relational database |
 | 27/05/2025 | Added a custom loading page and 404 Error page |
 | 27/05/2025 | Test deployed the application to Azure |
+| 29/05/2025 | Search functionality working - f(fund name, region, strategy) |
 
 **All-time Change Records**
 
