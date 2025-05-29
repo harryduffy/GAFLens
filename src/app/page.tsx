@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import * as XLSX from "xlsx";
 import "./dashboard.css";
 
 interface Fund {
@@ -112,6 +113,28 @@ export default function Home() {
     setFunds(sorted);
   };
 
+  const handleExportToXLSX = () => {
+    if (funds.length === 0) return;
+
+    const worksheetData = [
+      ["Fund", "Manager", "Region", "Currency", "Target Return", "Size"],
+      ...funds.map((f) => [
+        f.name,
+        f.manager.managerName,
+        f.region,
+        f.currency,
+        `${f.targetNetReturn}%`,
+        `$${parseInt(f.size).toLocaleString()}`
+      ])
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "FundDatabase");
+
+    XLSX.writeFile(workbook, "fund-database.xlsx");
+  };
+
   if (status === "loading" || status === "unauthenticated") return null;
 
   return (
@@ -194,7 +217,9 @@ export default function Home() {
           <div className="tools-bar">
             <div className="tools-left">
               <span className="tool-link">Filter</span>
-              <span className="tool-link">Export</span>
+              <span className="tool-link" onClick={handleExportToXLSX} style={{ cursor: "pointer" }}>
+                Export
+              </span>
             </div>
             <div className="tools-right">
               <div className="search-box">
