@@ -173,7 +173,12 @@ export default function CreateFormPage() {
   return (
     <div className="page">
       <aside className="sidebar">
-        <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+        <div
+          onClick={() => router.push('/')}
+          style={{ cursor: 'pointer' }}
+        >
+          <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+        </div>
         <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
           <p>SharePoint</p>
         </a>
