@@ -14,6 +14,7 @@
 | 27/05/2025 | Test deployed the application to Azure |
 | 29/05/2025 | Search functionality working - f(fund name, region, strategy) |
 | 29/05/2025 | Fund table is sortable (numerical and categorical data) |
+| 29/05/2025 | Fund table is exportable to xlsx |
 
 **All-time Change Records**
 
