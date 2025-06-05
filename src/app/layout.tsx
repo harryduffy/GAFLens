@@ -2,17 +2,12 @@
 import { Metadata } from "next";
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../app/dashboard.css"; // adjust path if necessary
 
-import Providers from "../components/Providers";
 import LoadingWrapper from "../components/LoadingWrapper";
+// ConditionalHeader removed
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,23 +33,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ClerkProvider>
           <LoadingWrapper>
-            <Providers>{children}</Providers>
+            {children}
           </LoadingWrapper>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
