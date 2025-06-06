@@ -22,6 +22,33 @@ export default function CustomSignIn() {
     return email.toLowerCase().endsWith('@globalalternativefunds.com');
   };
 
+  const validatePassword = (password: string) => {
+    const requirements = {
+      minLength: password.length >= 12,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+    
+    const isValid = Object.values(requirements).every(req => req);
+    
+    return { isValid, requirements };
+  };
+
+  const getPasswordRequirementText = () => {
+    const validation = validatePassword(password);
+    const requirements = [
+      { key: 'minLength', text: 'At least 12 characters', met: validation.requirements.minLength },
+      { key: 'hasUpperCase', text: 'One uppercase letter', met: validation.requirements.hasUpperCase },
+      { key: 'hasLowerCase', text: 'One lowercase letter', met: validation.requirements.hasLowerCase },
+      { key: 'hasNumber', text: 'One number', met: validation.requirements.hasNumber },
+      { key: 'hasSpecialChar', text: 'One special character', met: validation.requirements.hasSpecialChar }
+    ];
+
+    return requirements;
+  };
+
   // Step 1: Email/Password Authentication
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +56,12 @@ export default function CustomSignIn() {
 
     if (!validateEmailDomain(email)) {
       setError("Only @globalalternativefunds.com email addresses are allowed.");
+      return;
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setError("Password does not meet security requirements.");
       return;
     }
 
@@ -148,6 +181,16 @@ export default function CustomSignIn() {
     }
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    
+    // Clear password-related errors when user starts typing
+    if (error && error.includes("Password does not meet security requirements")) {
+      setError(null);
+    }
+  };
+
   const handleBackToCredentials = () => {
     setAuthStep('credentials');
     setCode("");
@@ -227,6 +270,8 @@ export default function CustomSignIn() {
       ))}
     </div>
   );
+
+  const isFormValid = validateEmailDomain(email) && validatePassword(password).isValid;
 
   return (
     <>
@@ -344,17 +389,17 @@ export default function CustomSignIn() {
                 />
               </label>
 
-              <label style={{ display: 'block', marginBottom: '2rem', fontSize: '0.875rem' }}>
+              <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
                 <span style={{ color: '#102948', fontWeight: '500', marginBottom: '0.5rem', display: 'block' }}>Password</span>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     style={{
                       padding: '0.75rem 3rem 0.75rem 0.75rem',
                       width: '100%',
-                      border: '2px solid #cb8548',
+                      border: `2px solid ${password && !validatePassword(password).isValid ? '#ef4444' : '#cb8548'}`,
                       borderRadius: '0.5rem',
                       outline: 'none',
                       fontSize: '1rem',
@@ -363,11 +408,13 @@ export default function CustomSignIn() {
                       backgroundColor: 'white'
                     }}
                     onFocus={(e) => {
-                      (e.target as HTMLInputElement).style.borderColor = '#102948';
-                      (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(16, 41, 72, 0.1)';
+                      if (!password || validatePassword(password).isValid) {
+                        (e.target as HTMLInputElement).style.borderColor = '#102948';
+                        (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(16, 41, 72, 0.1)';
+                      }
                     }}
                     onBlur={(e) => {
-                      (e.target as HTMLInputElement).style.borderColor = '#cb8548';
+                      (e.target as HTMLInputElement).style.borderColor = password && !validatePassword(password).isValid ? '#ef4444' : '#cb8548';
                       (e.target as HTMLInputElement).style.boxShadow = 'none';
                     }}
                     required
@@ -408,12 +455,44 @@ export default function CustomSignIn() {
                 </div>
               </label>
 
+              {/* Password Requirements */}
+              {password && (
+                <div style={{
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '0.5rem',
+                  padding: '0.75rem',
+                  marginBottom: '1.5rem',
+                  fontSize: '0.75rem'
+                }}>
+                  <div style={{ color: '#102948', fontWeight: '600', marginBottom: '0.5rem' }}>
+                    Password Requirements:
+                  </div>
+                  {getPasswordRequirementText().map((req, index) => (
+                    <div
+                      key={req.key}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: index === getPasswordRequirementText().length - 1 ? '0' : '0.25rem',
+                        color: req.met ? '#059669' : '#dc2626'
+                      }}
+                    >
+                      <span style={{ marginRight: '0.5rem', fontSize: '0.875rem' }}>
+                        {req.met ? '✓' : '✗'}
+                      </span>
+                      {req.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={!validateEmailDomain(email) || !password}
+                disabled={!isFormValid}
                 style={{
                   width: '100%',
-                  background: (validateEmailDomain(email) && password)
+                  background: isFormValid
                     ? 'linear-gradient(135deg, #102948 0%, #cb8548 100%)'
                     : 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)',
                   color: '#fdf1d8',
@@ -421,22 +500,22 @@ export default function CustomSignIn() {
                   padding: '0.875rem',
                   borderRadius: '0.5rem',
                   border: 'none',
-                  cursor: (validateEmailDomain(email) && password) ? 'pointer' : 'not-allowed',
+                  cursor: isFormValid ? 'pointer' : 'not-allowed',
                   fontSize: '1rem',
                   transition: 'all 0.2s ease-in-out',
-                  boxShadow: (validateEmailDomain(email) && password)
+                  boxShadow: isFormValid
                     ? '0 4px 15px rgba(16, 41, 72, 0.4)'
                     : '0 4px 15px rgba(107, 114, 128, 0.4)',
-                  opacity: (validateEmailDomain(email) && password) ? 1 : 0.6
+                  opacity: isFormValid ? 1 : 0.6
                 }}
                 onMouseOver={(e) => {
-                  if (validateEmailDomain(email) && password) {
+                  if (isFormValid) {
                     (e.target as HTMLButtonElement).style.transform = 'translateY(-2px)';
                     (e.target as HTMLButtonElement).style.boxShadow = '0 8px 25px rgba(16, 41, 72, 0.6)';
                   }
                 }}
                 onMouseOut={(e) => {
-                  if (validateEmailDomain(email) && password) {
+                  if (isFormValid) {
                     (e.target as HTMLButtonElement).style.transform = 'translateY(0)';
                     (e.target as HTMLButtonElement).style.boxShadow = '0 4px 15px rgba(16, 41, 72, 0.4)';
                   }
