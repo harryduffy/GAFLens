@@ -15,6 +15,7 @@
 | 29/05/2025 | Search functionality working - f(fund name, region, strategy) |
 | 29/05/2025 | Fund table is sortable (numerical and categorical data) |
 | 29/05/2025 | Fund table is exportable to xlsx |
+| 05/06/2025 | 2FA implemented |
 
 **All-time Change Records**
 
