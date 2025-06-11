@@ -21,7 +21,7 @@ interface Fund {
   manager: {
     managerName: string;
   };
-}
+} //
 
 export default function Home() {
   const { user, isLoaded } = useUser();
