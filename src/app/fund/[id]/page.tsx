@@ -27,6 +27,7 @@ type FundMeta = {
   currency: string;
   region: string;
   managerName: string;
+  status?: string | null;
 };
 
 export default function FundMeetingsPage() {
@@ -56,7 +57,8 @@ export default function FundMeetingsPage() {
           size: data.size,
           currency: data.currency,
           region: data.region,
-          managerName: data.managerName
+          managerName: data.managerName,
+          status: data.status
         });
         const enrichedMeetings = data.meetings.map((m: any) => ({
           ...m,
@@ -127,7 +129,8 @@ export default function FundMeetingsPage() {
         geographicFocus: updated.geographicFocus,
         currency: updated.currency,
         region: updated.region,
-        managerName: updated.managerName
+        managerName: updated.managerName,
+        status: updated.status
       }));
 
       setIsEditing(false);
@@ -159,7 +162,8 @@ export default function FundMeetingsPage() {
           size: f.size,
           currency: f.currency,
           region: f.region,
-          managerName: f.manager.managerName
+          managerName: f.manager.managerName,
+          status: f.status
         }));
         setAllFunds(formatted);
       } catch (err) {
@@ -392,6 +396,20 @@ export default function FundMeetingsPage() {
                       />
                     ) : (
                       <span className="dashboard-value">{displayValue(fund.region)}</span>
+                    )}
+                  </div>
+
+                  <div className="dashboard-field">
+                    <span className="dashboard-label">Status</span>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editableFund?.status || ''}
+                        onChange={(e) => setEditableFund(prev => ({ ...prev!, status: e.target.value }))}
+                        className="edit-input"
+                      />
+                    ) : (
+                      <span className="dashboard-value">{displayValue(fund.status)}</span>
                     )}
                   </div>
 
