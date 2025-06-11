@@ -13,9 +13,11 @@ interface Fund {
   assetClass: string;
   targetNetReturn: number;
   geographicFocus: string;
+  tier: string;
   size: string;
   currency: string;
   region: string;
+  status: string;
   manager: {
     managerName: string;
   };
@@ -113,14 +115,14 @@ export default function Home() {
     if (funds.length === 0) return;
 
     const worksheetData = [
-      ['Fund', 'Manager', 'Region', 'Currency', 'Target Return', 'Size'],
+      ['Fund', 'Manager', 'Region', 'Status', 'Target Return', 'Tier'],
       ...funds.map((f) => [
         f.name,
         f.manager.managerName,
         f.region,
-        f.currency,
+        f.status,
         `${f.targetNetReturn}%`,
-        `$${parseInt(f.size).toLocaleString()}`,
+        f.tier,
       ]),
     ];
 
@@ -257,9 +259,9 @@ export default function Home() {
                       <th onClick={() => handleSort('name', false)}>Fund</th>
                       <th onClick={() => handleSort('managerName', false)}>Manager</th>
                       <th onClick={() => handleSort('region', false)}>Region</th>
-                      <th onClick={() => handleSort('currency', false)}>Currency</th>
+                      <th onClick={() => handleSort('status', false)}>Status</th>
                       <th onClick={() => handleSort('targetNetReturn', true)}>Target Return</th>
-                      <th onClick={() => handleSort('size', true)}>Size</th>
+                      <th onClick={() => handleSort('Tier', true)}>Tier</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -269,12 +271,12 @@ export default function Home() {
                         className="clickable-row"
                         onClick={() => router.push(`/fund/${f.id}`)}
                       >
-                        <td>{f.name}</td>
-                        <td>{f.manager.managerName}</td>
-                        <td>{f.region}</td>
-                        <td>{f.currency}</td>
-                        <td>{f.targetNetReturn}%</td>
-                        <td>${parseInt(f.size).toLocaleString()}</td>
+                        <td>{f.name || '–'}</td>
+                        <td>{f.manager?.managerName || '–'}</td>
+                        <td>{f.region || '–'}</td>
+                        <td>{f.status || '–'}</td>
+                        <td>{f.targetNetReturn !== undefined && f.targetNetReturn !== null ? `${f.targetNetReturn}%` : '–'}</td>
+                        <td>{f.tier || '–'}</td>
                       </tr>
                     ))}
                   </tbody>

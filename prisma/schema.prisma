@@ -26,6 +26,7 @@ model Fund {
 
   tier               String? 
   tierJustification  String?
+  status             String?
 
   managerId          Int
   manager            Manager     @relation(fields: [managerId], references: [id])
