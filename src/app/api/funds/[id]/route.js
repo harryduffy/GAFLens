@@ -18,14 +18,16 @@ export async function PUT(req, { params }) {
         geographicFocus: data.geographicFocus,
         currency: data.currency,
         region: data.region,
-        managerName: data.managerName
+        managerName: data.managerName,
+        status: data.status
       }
     });
 
     // Safely serialize BigInt
     const safeFund = {
       ...updatedFund,
-      size: updatedFund.size.toString()
+      size: updatedFund.size.toString(),
+      status: updatedFund.status
     };
 
     return new Response(JSON.stringify(safeFund), {

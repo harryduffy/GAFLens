@@ -24,6 +24,8 @@ model Fund {
   currency           String
   region             String
 
+  status             String?
+
   tier               String? 
   tierJustification  String?
 
