@@ -27,6 +27,8 @@ type FundMeta = {
   currency: string;
   region: string;
   managerName: string;
+  tierJustification?: string;
+  status?: 'accepted' | 'declined';
 };
 
 export default function FundMeetingsPage() {
@@ -56,7 +58,9 @@ export default function FundMeetingsPage() {
           size: data.size,
           currency: data.currency,
           region: data.region,
-          managerName: data.managerName
+          managerName: data.managerName,
+          tierJustification: data.tierJustification,
+          status: data.status
         });
         const enrichedMeetings = data.meetings.map((m: any) => ({
           ...m,
@@ -127,7 +131,9 @@ export default function FundMeetingsPage() {
         geographicFocus: updated.geographicFocus,
         currency: updated.currency,
         region: updated.region,
-        managerName: updated.managerName
+        managerName: updated.managerName,
+        tierJustification: updated.tierJustification,
+        status: updated.status
       }));
 
       setIsEditing(false);
@@ -284,14 +290,32 @@ export default function FundMeetingsPage() {
 
             {fund && (
               <div className="section fund-dashboard">
-                <div className="fund-summary-header">
+                <div className="fund-summary-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <h3>{fund?.name} — Summary</h3>
-                  <button className="edit-button"
-                      onClick={() => {
-                      setEditableFund(fund); // make a working copy
-                      setIsEditing(true);
-                    }}
-                  >EDIT</button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    {isEditing ? (
+                      <div className="status-toggle-wrapper">
+                        <div
+                          className={`status-toggle-switch ${editableFund?.status}`}
+                          onClick={() =>
+                            setEditableFund((prev) => ({
+                              ...prev!,
+                              status: prev?.status === 'accepted' ? 'declined' : 'accepted',
+                            }))
+                          }
+                        >
+                          <div className="status-toggle-option">accepted</div>
+                          <div className="status-toggle-option">declined</div>
+                          <div className={`status-toggle-slider ${editableFund?.status}`}></div>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className={`status-display-pill ${fund.status}`}>
+                        {fund.status === 'accepted' ? 'accepted' : 'declined'}
+                      </span>
+                    )}
+                    <button className="edit-button" onClick={() => { setEditableFund(fund); setIsEditing(true); }}>EDIT</button>
+                  </div>
                 </div>
                 <hr className="dashboard-divider" />
                 <div className="dashboard-grid">
@@ -409,6 +433,21 @@ export default function FundMeetingsPage() {
                     )}
                   </div>
                 </div>
+                <div className="dashboard-field-full">
+                  <span className="dashboard-label">Tier Justification</span>
+                  {isEditing ? (
+                    <textarea
+                      value={editableFund?.tierJustification || ''}
+                      onChange={(e) =>
+                        setEditableFund((prev) => ({ ...prev!, tierJustification: e.target.value }))
+                      }
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                  ) : (
+                    <span className="dashboard-value">{displayValue(fund.tierJustification)}</span>
+                  )}
+                </div>
 
                 {isEditing && (
                   <div className="edit-controls">
@@ -423,7 +462,7 @@ export default function FundMeetingsPage() {
               <div className="section manager-header">
               <img src="/database-icon.png" alt="Database" className="section-icon" />
               <div className="section-text">
-                <h2>{fund?.name}</h2>
+                <h2>{fund?.name} — Engagement History</h2>
                 <p>Review previous meeting records and apply AI to summarise due diligence efforts for this fund.</p>
               </div>
             </div>

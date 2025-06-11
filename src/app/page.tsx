@@ -261,7 +261,7 @@ export default function Home() {
                       <th onClick={() => handleSort('region', false)}>Region</th>
                       <th onClick={() => handleSort('status', false)}>Status</th>
                       <th onClick={() => handleSort('targetNetReturn', true)}>Target Return</th>
-                      <th onClick={() => handleSort('Tier', true)}>Tier</th>
+                      <th onClick={() => handleSort('tier', true)}>Tier</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -274,7 +274,11 @@ export default function Home() {
                         <td>{f.name || '–'}</td>
                         <td>{f.manager?.managerName || '–'}</td>
                         <td>{f.region || '–'}</td>
-                        <td>{f.status || '–'}</td>
+                        <td>{f.status ? (<span className={`status-capsule ${f.status.toLowerCase()}`}>{f.status}</span>
+                          ) : (
+                            '–'
+                          )}
+                        </td>
                         <td>{f.targetNetReturn !== undefined && f.targetNetReturn !== null ? `${f.targetNetReturn}%` : '–'}</td>
                         <td>{f.tier || '–'}</td>
                       </tr>

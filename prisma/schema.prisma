@@ -25,8 +25,8 @@ model Fund {
   region             String
 
   tier               String? 
-  tierJustification  String?
-  status             String?
+  tierJustification  String?     @db.Text
+  status             String?     @default("declined")
 
   managerId          Int
   manager            Manager     @relation(fields: [managerId], references: [id])

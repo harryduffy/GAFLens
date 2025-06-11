@@ -39,6 +39,8 @@ export async function GET(req, { params }) {
         region: fund.region,
         managerName: fund.managerName,
         fundTier: fund.tier,
+        tierJustification: fund.tierJustification,
+        status: fund.status,
         meetings: fund.meetings.map((m) => ({
           id: m.id,
           meetingDate: m.meetingDate,

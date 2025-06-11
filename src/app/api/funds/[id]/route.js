@@ -18,7 +18,9 @@ export async function PUT(req, { params }) {
         geographicFocus: data.geographicFocus,
         currency: data.currency,
         region: data.region,
-        managerName: data.managerName
+        managerName: data.managerName,
+        tierJustification: data.tierJustification,
+        status: data.status
       }
     });
 
