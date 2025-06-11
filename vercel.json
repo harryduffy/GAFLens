@@ -1,9 +1,0 @@
-{
-  "functions": {
-    "api/**": {
-      "memory": 128,
-      "maxDuration": 10,
-      "region": "syd1"
-    }
-  }
-}
