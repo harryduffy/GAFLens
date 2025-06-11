@@ -42,3 +42,7 @@ export async function GET(req) {
     headers: { 'Content-Type': 'application/json' }
   });
 }
+
+// Tier Justification section on dashboard
+// Healthcare, Enterprise Software etc. industries in input field
+// declined and why?
