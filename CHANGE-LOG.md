@@ -4,7 +4,7 @@
 
 | Date      | Change |
 | ----------- | ----------- |
-| 11/06/2025   | Added in tier justification to fund dashboard |
+| 11/06/2025   | Added in tier justification and status to fund dashboard |
 
 **All-time Change Records**
 
