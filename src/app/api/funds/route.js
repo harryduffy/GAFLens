@@ -35,6 +35,7 @@ export async function GET(req) {
   const safeFunds = funds.map(fund => ({
     ...fund,
     size: fund.size.toString(),
+    status: fund.status,
     manager: { ...fund.manager }
   }));
 
