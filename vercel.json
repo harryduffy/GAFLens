@@ -1,7 +1,9 @@
 {
   "functions": {
-    "api/**.js": {
-      "regions": ["syd1"]
+    "api/**": {
+      "memory": 128,
+      "maxDuration": 10,
+      "region": "syd1"
     }
   }
 }
