@@ -561,8 +561,7 @@ body {
 .status-toggle-switch {
   position: relative;
   width: 160px;
-  height: 40px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  height: 30px;
   border: 2px solid #dee2e6;
   border-radius: 20px;
   display: flex;
@@ -571,9 +570,7 @@ body {
   font-weight: 600;
   font-size: 13px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    inset 0 1px 3px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.08);
+
 }
 
 .status-toggle-option {
@@ -589,23 +586,6 @@ body {
   letter-spacing: 0.3px;
 }
 
-/* Text color transitions */
-.status-toggle-switch.accepted .status-toggle-option:first-child {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.status-toggle-switch.accepted .status-toggle-option:last-child {
-  color: #6c757d;
-}
-
-.status-toggle-switch.declined .status-toggle-option:first-child {
-  color: #6c757d;
-}
-
-.status-toggle-switch.declined .status-toggle-option:last-child {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
 .status-toggle-slider {
   position: absolute;
   top: 2px;
@@ -614,23 +594,18 @@ body {
   border-radius: 18px;
   z-index: 1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.15),
-    0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .status-toggle-slider.accepted {
   left: 2px;
   color: rgb(9, 101, 43);
   background:rgb(69, 214, 123);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .status-toggle-slider.declined {
   left: calc(50% - 2px);
   color: rgb(141, 15, 15);
   background:rgb(231, 93, 93);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .status-display-pill {
@@ -646,13 +621,11 @@ body {
 .status-display-pill.accepted {
   color: rgb(9, 101, 43);
   background:rgb(69, 214, 123);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .status-display-pill.declined {
   color: rgb(141, 15, 15);
   background:rgb(231, 93, 93);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .fund-dashboard h3 {
@@ -667,12 +640,13 @@ body {
 }
 
 .dashboard-field-full textarea.edit-textarea {
-  width: 100%;
+  width: 98.4%;
   resize: vertical;
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background: #fafafa;
 }
 
 .fund-summary-header {
