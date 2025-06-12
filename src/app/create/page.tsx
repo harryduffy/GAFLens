@@ -4,7 +4,6 @@ import '../dashboard.css';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { useUser, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 
 const EditorClient = dynamic(() => import('../../components/EditorClient'), { ssr: false });
 
@@ -19,7 +18,6 @@ type FundOption = {
 };
 
 export default function CreateFormPage() {
-  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -52,8 +50,6 @@ export default function CreateFormPage() {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    if (!user || !isLoaded) return;
-
     fetch('/api/funds')
       .then(res => res.json())
       .then((data: FundOption[]) => {
@@ -61,7 +57,7 @@ export default function CreateFormPage() {
         setAllFunds(data);
       })
       .catch(err => console.error('Failed to load funds:', err));
-  }, [user, isLoaded]);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -142,90 +138,75 @@ export default function CreateFormPage() {
     (fund.managerName || '').toLowerCase().includes(dropdownQuery.toLowerCase())
   );
 
-  if (!isLoaded) return null;
-
   return (
-    <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
+    <div className="page">
+      <aside className="sidebar">
+        <div onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
+          <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+        </div>
+        <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer"><p>SharePoint</p></a>
+        <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer"><p>Salesforce</p></a>
+        <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer"><p>Preqin</p></a>
+      </aside>
 
-      <SignedIn>
-        <div className="page">
-          <aside className="sidebar">
-            <div onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
-              <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
-            </div>
-            <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer"><p>SharePoint</p></a>
-            <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer"><p>Salesforce</p></a>
-            <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer"><p>Preqin</p></a>
-          </aside>
-
-          <div className="main">
-            <div className="top-bar">
-              <div className="search-container">
-                <div className="search-box">
-                  <img src="/search-icon.png" alt="Search" className="search-icon" />
-                  <div style={{ position: 'relative' }}>
-                    <input
-                      type="text"
-                      placeholder="Search GAF fund database..."
-                      className="search-input"
-                      value={dropdownQuery}
-                      onChange={(e) => {
-                        setDropdownQuery(e.target.value);
-                        setShowDropdown(true);
-                      }}
-                      onFocus={() => setShowDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                    />
-                    {showDropdown && dropdownQuery.trim() !== '' && (
-                      <div style={{
-                        position: "absolute", top: "100%", left: 0, width: "100%", backgroundColor: "white",
-                        border: "1px solid #ddd", borderTop: "none", maxHeight: "200px", overflowY: "auto",
-                        zIndex: 1000, boxShadow: "0 2px 8px rgba(0,0,0,0.15)", borderBottomLeftRadius: "6px",
-                        borderBottomRightRadius: "6px"
-                      }}>
-                        {filteredDropdownFunds.length > 0 ? (
-                          filteredDropdownFunds.slice(0, 8).map((fund) => (
-                            <div
-                              key={fund.name}
-                              onClick={() => {
-                                router.push(`/fund/${fund.id}`);
-                                setShowDropdown(false);
-                                setDropdownQuery('');
-                              }}
-                              style={{ padding: "8px 12px", cursor: "pointer" }}
-                              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
-                              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
-                            >
-                              <span style={{ fontWeight: 'bold' }}>{fund.name}</span>{' '}
-                              <span style={{ color: 'grey' }}>
-                                | {fund.geographicFocus}, {fund.managerName}
-                              </span>
-                            </div>
-                          ))
-                        ) : (
-                          <div style={{ padding: "8px 12px", color: "grey" }}>No results</div>
-                        )}
-                      </div>
+      <div className="main">
+        <div className="top-bar">
+          <div className="search-container">
+            <div className="search-box">
+              <img src="/search-icon.png" alt="Search" className="search-icon" />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  placeholder="Search GAF fund database..."
+                  className="search-input"
+                  value={dropdownQuery}
+                  onChange={(e) => {
+                    setDropdownQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                />
+                {showDropdown && dropdownQuery.trim() !== '' && (
+                  <div style={{
+                    position: "absolute", top: "100%", left: 0, width: "100%", backgroundColor: "white",
+                    border: "1px solid #ddd", borderTop: "none", maxHeight: "200px", overflowY: "auto",
+                    zIndex: 1000, boxShadow: "0 2px 8px rgba(0,0,0,0.15)", borderBottomLeftRadius: "6px",
+                    borderBottomRightRadius: "6px"
+                  }}>
+                    {filteredDropdownFunds.length > 0 ? (
+                      filteredDropdownFunds.slice(0, 8).map((fund) => (
+                        <div
+                          key={fund.name}
+                          onClick={() => {
+                            router.push(`/fund/${fund.id}`);
+                            setShowDropdown(false);
+                            setDropdownQuery('');
+                          }}
+                          style={{ padding: "8px 12px", cursor: "pointer" }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
+                        >
+                          <span style={{ fontWeight: 'bold' }}>{fund.name}</span>{' '}
+                          <span style={{ color: 'grey' }}>
+                            | {fund.geographicFocus}, {fund.managerName}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ padding: "8px 12px", color: "grey" }}>No results</div>
                     )}
                   </div>
-                </div>
+                )}
               </div>
-              <div className="top-bar-right">
-                <button className="create-button" onClick={() => router.back()} style={{ borderRadius: '8px', width: '91px' }}>
-                  ← Back
-                </button>
-                <button className="create-button" onClick={handleSubmit}>Submit Data</button>
-                <UserButton 
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-10 h-10"
-                    }
-                  }}
-                />
-              </div>
+            </div>
+          </div>
+          <div className="top-bar-right">
+            <button className="create-button" onClick={() => router.back()} style={{ borderRadius: '8px', width: '91px' }}>
+              ← Back
+            </button>
+            <button className="create-button" onClick={handleSubmit}>Submit Data</button>
+          </div>
             </div>
 
             <div className="section manager-header">
@@ -340,7 +321,5 @@ export default function CreateFormPage() {
             </div>
           </div>
         </div>
-      </SignedIn>
-    </>
   );
 }

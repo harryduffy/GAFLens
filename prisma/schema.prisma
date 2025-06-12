@@ -46,4 +46,13 @@ model FundMeetingDetail {
   fund               Fund     @relation(fields: [fundId], references: [id])
 }
 
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  totpSecret   String   // base32 string stored for MFA
+  mfaEnabled   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
 

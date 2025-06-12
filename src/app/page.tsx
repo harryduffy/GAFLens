@@ -1,6 +1,5 @@
 'use client';
 
-import { useUser, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
@@ -21,10 +20,9 @@ interface Fund {
   manager: {
     managerName: string;
   };
-} //
+}
 
 export default function Home() {
-  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -34,10 +32,8 @@ export default function Home() {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Fetch data
+  // Fetch all funds on load
   useEffect(() => {
-    if (!isLoaded || !user) return;
-
     const fetchFunds = async () => {
       const res = await fetch('/api/funds');
       const data = await res.json();
@@ -45,31 +41,26 @@ export default function Home() {
     };
 
     fetchFunds();
-  }, [isLoaded, user]);
+  }, []);
 
-  // Handle live search debounce
+  // Handle live search
   useEffect(() => {
-    if (!user) return;
+    const fetchData = async () => {
+      try {
+        const res = searchQuery
+          ? await fetch(`/api/funds?q=${encodeURIComponent(searchQuery)}`)
+          : await fetch('/api/funds');
 
-    if (searchQuery === '') {
-      (async () => {
-        const res = await fetch('/api/funds');
         const data = await res.json();
         setFunds(data);
-      })();
-    } else {
-      const delayDebounce = setTimeout(async () => {
-        try {
-          const res = await fetch(`/api/funds?q=${encodeURIComponent(searchQuery)}`);
-          const data = await res.json();
-          setFunds(data);
-        } catch (err) {
-          console.error('Failed to search funds', err);
-        }
-      }, 300);
-      return () => clearTimeout(delayDebounce);
-    }
-  }, [searchQuery, user]);
+      } catch (err) {
+        console.error('Failed to fetch/search funds:', err);
+      }
+    };
+
+    const debounce = setTimeout(fetchData, 300);
+    return () => clearTimeout(debounce);
+  }, [searchQuery]);
 
   const filteredDropdownFunds = funds.filter((fund) =>
     fund.name.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
@@ -87,27 +78,18 @@ export default function Home() {
     setSortDirection(direction as 'asc' | 'desc');
 
     const sorted = [...funds].sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: any = column === 'managerName' ? a.manager.managerName : a[column as keyof Fund];
+      let bValue: any = column === 'managerName' ? b.manager.managerName : b[column as keyof Fund];
 
-      if (column === 'managerName') {
-        aValue = a.manager.managerName;
-        bValue = b.manager.managerName;
-      } else {
-        aValue = a[column as keyof Fund];
-        bValue = b[column as keyof Fund];
-      }
-
-      if (isNumeric) {
-        return direction === 'asc'
+      return isNumeric
+        ? direction === 'asc'
           ? Number(aValue) - Number(bValue)
-          : Number(bValue) - Number(aValue);
-      } else {
-        return direction === 'asc'
-          ? String(aValue).localeCompare(String(bValue))
-          : String(bValue).localeCompare(String(aValue));
-      }
+          : Number(bValue) - Number(aValue)
+        : direction === 'asc'
+        ? String(aValue).localeCompare(String(bValue))
+        : String(bValue).localeCompare(String(aValue));
     });
+
     setFunds(sorted);
   };
 
@@ -129,167 +111,157 @@ export default function Home() {
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FundDatabase');
-
     XLSX.writeFile(workbook, 'fund-database.xlsx');
   };
 
-  if (!isLoaded) return null;
-
   return (
-    <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
+    <div className="page">
+      <aside className="sidebar">
+        <div onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
+          <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+        </div>
+        <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
+          <p>SharePoint</p>
+        </a>
+        <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
+          <p>Salesforce</p>
+        </a>
+        <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
+          <p>Preqin</p>
+        </a>
+      </aside>
 
-      <SignedIn>
-        <div className="page">
-          <aside className="sidebar">
-            <div onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
-              <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+      <div className="main">
+        <div className="top-bar">
+          <div className="search-container" style={{ position: 'relative' }}>
+            <div className="search-box">
+              <img src="/search-icon.png" alt="Search" className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search GAF fund database..."
+                className="search-input"
+                value={dropdownQuery}
+                onChange={(e) => {
+                  setDropdownQuery(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              />
             </div>
-            <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
-              <p>SharePoint</p>
-            </a>
-            <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
-              <p>Salesforce</p>
-            </a>
-            <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
-              <p>Preqin</p>
-            </a>
-          </aside>
-
-          <div className="main">
-            <div className="top-bar">
-              <div className="search-container" style={{ position: 'relative' }}>
-                <div className="search-box">
-                  <img src="/search-icon.png" alt="Search" className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder="Search GAF fund database..."
-                    className="search-input"
-                    value={dropdownQuery}
-                    onChange={(e) => {
-                      setDropdownQuery(e.target.value);
-                      setShowDropdown(true);
-                    }}
-                    onFocus={() => setShowDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                  />
-                </div>
-                {showDropdown && dropdownQuery.trim() !== '' && (
-                  <div className="dropdown-results">
-                    {filteredDropdownFunds.length > 0 ? (
-                      filteredDropdownFunds.slice(0, 8).map((fund) => (
-                        <div
-                          key={fund.id}
-                          className="dropdown-item"
-                          onClick={() => {
-                            router.push(`/fund/${fund.id}`);
-                            setShowDropdown(false);
-                            setDropdownQuery('');
-                          }}
-                        >
-                          <span style={{ color: 'black', fontWeight: 'bold' }}>{fund.name}</span>{' '}
-                          <span style={{ color: 'grey' }}>
-                            | {fund.region}, {fund.strategy}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="dropdown-item">No results</div>
-                    )}
-                  </div>
+            {showDropdown && dropdownQuery.trim() !== '' && (
+              <div className="dropdown-results">
+                {filteredDropdownFunds.length > 0 ? (
+                  filteredDropdownFunds.slice(0, 8).map((fund) => (
+                    <div
+                      key={fund.id}
+                      className="dropdown-item"
+                      onClick={() => {
+                        router.push(`/fund/${fund.id}`);
+                        setShowDropdown(false);
+                        setDropdownQuery('');
+                      }}
+                    >
+                      <span style={{ color: 'black', fontWeight: 'bold' }}>{fund.name}</span>{' '}
+                      <span style={{ color: 'grey' }}>
+                        | {fund.region}, {fund.strategy}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="dropdown-item">No results</div>
                 )}
               </div>
-              <div className="top-bar-right">
-                <button className="create-button" onClick={() => router.push('/create')}>
-                  Create Form
-                </button>
-                <UserButton 
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-10 h-10"
-                    }
-                  }}
+            )}
+          </div>
+          <div className="top-bar-right">
+            <button
+              className="create-button"
+              style={{ backgroundColor: '#ef4444' }}
+              onClick={async () => {
+                await fetch('/api/signout', { method: 'POST' });
+                window.location.href = '/auth';
+              }}
+            >
+              Sign Out
+            </button>
+
+            <button className="create-button" onClick={() => router.push('/create')}>
+              Create Form
+            </button>
+          </div>
+        </div>
+
+        <div className="section manager-header">
+          <img src="/database-icon.png" alt="Database" className="section-icon" />
+          <div className="section-text">
+            <h2>Fund Database</h2>
+            <p>
+              Search, filter, and compare funds across strategy, asset class, manager, and more to support informed selection and collaboration.
+            </p>
+          </div>
+        </div>
+
+        <div className="section">
+          <div className="tools-bar">
+            <div className="tools-left">
+              <span className="tool-link">Filter</span>
+              <span className="tool-link" onClick={handleExportToXLSX} style={{ cursor: 'pointer' }}>
+                Export
+              </span>
+            </div>
+            <div className="tools-right">
+              <div className="search-box">
+                <img src="/search-icon.png" alt="Search" className="search-icon" />
+                <input
+                  type="text"
+                  className="tools-search"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
+          </div>
 
-            <div className="section manager-header">
-              <img src="/database-icon.png" alt="Database" className="section-icon" />
-              <div className="section-text">
-                <h2>Fund Database</h2>
-                <p>
-                  Search, filter, and compare funds across strategy, asset class, manager, and more
-                  to support informed selection and collaboration.
-                </p>
-              </div>
-            </div>
-
-            <div className="section">
-              <div className="tools-bar">
-                <div className="tools-left">
-                  <span className="tool-link">Filter</span>
-                  <span
-                    className="tool-link"
-                    onClick={handleExportToXLSX}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    Export
-                  </span>
-                </div>
-                <div className="tools-right">
-                  <div className="search-box">
-                    <img src="/search-icon.png" alt="Search" className="search-icon" />
-                    <input
-                      type="text"
-                      className="tools-search"
-                      placeholder="Search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="manager-table-container">
-                <table className="manager-table">
-                  <thead>
-                    <tr>
-                      <th onClick={() => handleSort('name', false)}>Fund</th>
-                      <th onClick={() => handleSort('managerName', false)}>Manager</th>
-                      <th onClick={() => handleSort('region', false)}>Region</th>
-                      <th onClick={() => handleSort('status', false)}>Status</th>
-                      <th onClick={() => handleSort('targetNetReturn', true)}>Target Return</th>
-                      <th onClick={() => handleSort('tier', true)}>Tier</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {funds.map((f) => (
-                      <tr
-                        key={f.id}
-                        className="clickable-row"
-                        onClick={() => router.push(`/fund/${f.id}`)}
-                      >
-                        <td>{f.name || '–'}</td>
-                        <td>{f.manager?.managerName || '–'}</td>
-                        <td>{f.region || '–'}</td>
-                        <td>{f.status ? (<span className={`status-capsule ${f.status.toLowerCase()}`}>{f.status}</span>
-                          ) : (
-                            '–'
-                          )}
-                        </td>
-                        <td>{f.targetNetReturn !== undefined && f.targetNetReturn !== null ? `${f.targetNetReturn}%` : '–'}</td>
-                        <td>{f.tier || '–'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div className="manager-table-container">
+            <table className="manager-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort('name', false)}>Fund</th>
+                  <th onClick={() => handleSort('managerName', false)}>Manager</th>
+                  <th onClick={() => handleSort('region', false)}>Region</th>
+                  <th onClick={() => handleSort('status', false)}>Status</th>
+                  <th onClick={() => handleSort('targetNetReturn', true)}>Target Return</th>
+                  <th onClick={() => handleSort('tier', true)}>Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                {funds.map((f) => (
+                  <tr key={f.id} className="clickable-row" onClick={() => router.push(`/fund/${f.id}`)}>
+                    <td>{f.name || '–'}</td>
+                    <td>{f.manager?.managerName || '–'}</td>
+                    <td>{f.region || '–'}</td>
+                    <td>
+                      {f.status ? (
+                        <span className={`status-capsule ${f.status.toLowerCase()}`}>{f.status}</span>
+                      ) : (
+                        '–'
+                      )}
+                    </td>
+                    <td>
+                      {f.targetNetReturn !== undefined && f.targetNetReturn !== null
+                        ? `${f.targetNetReturn}%`
+                        : '–'}
+                    </td>
+                    <td>{f.tier || '–'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </SignedIn>
-    </>
+      </div>
+    </div>
   );
 }

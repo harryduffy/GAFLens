@@ -1,13 +1,7 @@
-// src/app/layout.tsx
 import { Metadata } from "next";
-import {
-  ClerkProvider,
-} from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../app/dashboard.css"; // adjust path if necessary
-
-import LoadingWrapper from "../components/LoadingWrapper";
-// ConditionalHeader removed
+import "../app/dashboard.css";
+import ClientWrapper from "@/components/ClientWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,11 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ClerkProvider>
-          <LoadingWrapper>
-            {children}
-          </LoadingWrapper>
-        </ClerkProvider>
+        <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
   );

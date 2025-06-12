@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useUser, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 import '../../dashboard.css';
 
 type MeetingDetail = {
@@ -32,7 +31,6 @@ type FundMeta = {
 };
 
 export default function FundMeetingsPage() {
-  const { user, isLoaded } = useUser();
   const { id } = useParams();
   const router = useRouter();
 
@@ -41,7 +39,7 @@ export default function FundMeetingsPage() {
 
   // Fetch fund + meeting data
   useEffect(() => {
-    if (!isLoaded || !user || !id) return;
+    if (!id) return;
 
     fetch(`/api/funds/${id}/meetings`)
       .then(async (res) => {
@@ -72,7 +70,7 @@ export default function FundMeetingsPage() {
         console.error('❌ Failed to fetch meetings:', err);
         alert('Failed to load fund data. See console for details.');
       });
-  }, [isLoaded, user, id]);
+  }, [id]);
 
   const handleSummarise = async (meeting: MeetingDetail) => {
     const res = await fetch('/api/summarise', {
@@ -148,7 +146,6 @@ export default function FundMeetingsPage() {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
 
     const fetchFunds = async () => {
       try {
@@ -174,7 +171,7 @@ export default function FundMeetingsPage() {
     };
 
     fetchFunds();
-  }, [user]);
+  }, []);
 
   const filteredDropdownFunds = allFunds.filter((fund) =>
     fund.name.toLowerCase().includes(dropdownQuery.toLowerCase()) ||
@@ -183,324 +180,307 @@ export default function FundMeetingsPage() {
     fund.region.toLowerCase().includes(dropdownQuery.toLowerCase())
   );
 
-  if (!isLoaded) return null;
-
   return (
-    <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-       
-      <SignedIn>
-        <div className="page">
-          <aside className="sidebar">
-            <div
-              onClick={() => router.push('/')}
-              style={{ cursor: 'pointer' }}
-            >
-              <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
-            </div>
-            <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
-              <p>SharePoint</p>
-            </a>
-            <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
-              <p>Salesforce</p>
-            </a>
-            <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
-              <p>Preqin</p>
-            </a>
-          </aside>
+    <div className="page">
+      <aside className="sidebar">
+        <div
+          onClick={() => router.push('/')}
+          style={{ cursor: 'pointer' }}
+        >
+          <img src="/gaf-logo.png" alt="GAF" className="sidebar-icon gaf-icon" />
+        </div>
+        <a className="sidebar-text" href="https://globalalternativefunds.sharepoint.com/_layouts/15/sharepoint.aspx" target="_blank" rel="noopener noreferrer">
+          <p>SharePoint</p>
+        </a>
+        <a className="sidebar-text" href="https://www.salesforce.com/au/" target="_blank" rel="noopener noreferrer">
+          <p>Salesforce</p>
+        </a>
+        <a className="sidebar-text" href="https://www.preqin.com/insights" target="_blank" rel="noopener noreferrer">
+          <p>Preqin</p>
+        </a>
+      </aside>
 
-          <div className="main">
-            <div className="top-bar">
-              <div className="search-container">
-                <div className="search-box">
-                  <img src="/search-icon.png" alt="Search" className="search-icon" />
-                  <div style={{ position: "relative" }}>
-                    <input
-                      type="text"
-                      placeholder="Search GAF fund database..."
-                      className="search-input"
-                      value={dropdownQuery}
-                      onChange={(e) => {
-                        setDropdownQuery(e.target.value);
-                        setShowDropdown(true);
-                      }}
-                      onFocus={() => setShowDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                    />
-
-                    {showDropdown && dropdownQuery.trim() !== "" && (
-                      <div style={{
-                        position: "absolute",
-                        top: "100%",
-                        left: 0,
-                        minWidth: "100%",   // Match the input width
-                        backgroundColor: "white",
-                        border: "1px solid #ddd",
-                        borderTop: "none",
-                        maxHeight: "200px",
-                        overflowY: "auto",
-                        zIndex: 1000,
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                        borderBottomLeftRadius: "6px",
-                        borderBottomRightRadius: "6px"
-                      }}>
-                        {filteredDropdownFunds.length > 0 ? (
-                          filteredDropdownFunds.slice(0, 8).map((fund) => (
-                            <div
-                              key={fund.id}
-                              onClick={() => {
-                                router.push(`/fund/${fund.id}`);
-                                setShowDropdown(false);
-                                setDropdownQuery("");
-                              }}
-                              style={{
-                                padding: "8px 12px",
-                                cursor: "pointer"
-                              }}
-                              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
-                              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
-                            >
-                              <span style={{ color: "black", fontWeight: "bold" }}>{fund.name}</span>{" "}
-                              <span style={{ color: "grey" }}>
-                                | {fund.region}, {fund.strategy}
-                              </span>
-                            </div>
-                          ))
-                        ) : (
-                          <div style={{ padding: "8px 12px", color: "grey" }}>No results</div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="top-bar-right">
-                <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
-                <UserButton 
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-10 h-10"
-                    }
+      <div className="main">
+        <div className="top-bar">
+          <div className="search-container">
+            <div className="search-box">
+              <img src="/search-icon.png" alt="Search" className="search-icon" />
+              <div style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  placeholder="Search GAF fund database..."
+                  className="search-input"
+                  value={dropdownQuery}
+                  onChange={(e) => {
+                    setDropdownQuery(e.target.value);
+                    setShowDropdown(true);
                   }}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 />
-              </div>
-            </div>
 
-            {fund && (
-              <div className="section fund-dashboard">
-                <div className="fund-summary-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <h3>{fund?.name} — Summary</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {isEditing ? (
-                      <div className="status-toggle-wrapper">
+                {showDropdown && dropdownQuery.trim() !== "" && (
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    minWidth: "100%",   // Match the input width
+                    backgroundColor: "white",
+                    border: "1px solid #ddd",
+                    borderTop: "none",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    zIndex: 1000,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    borderBottomLeftRadius: "6px",
+                    borderBottomRightRadius: "6px"
+                  }}>
+                    {filteredDropdownFunds.length > 0 ? (
+                      filteredDropdownFunds.slice(0, 8).map((fund) => (
                         <div
-                          className={`status-toggle-switch ${editableFund?.status}`}
-                          onClick={() =>
-                            setEditableFund((prev) => ({
-                              ...prev!,
-                              status: prev?.status === 'accepted' ? 'declined' : 'accepted',
-                            }))
-                          }
+                          key={fund.id}
+                          onClick={() => {
+                            router.push(`/fund/${fund.id}`);
+                            setShowDropdown(false);
+                            setDropdownQuery("");
+                          }}
+                          style={{
+                            padding: "8px 12px",
+                            cursor: "pointer"
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
                         >
-                          <div className="status-toggle-option">accepted</div>
-                          <div className="status-toggle-option">declined</div>
-                          <div className={`status-toggle-slider ${editableFund?.status}`}></div>
+                          <span style={{ color: "black", fontWeight: "bold" }}>{fund.name}</span>{" "}
+                          <span style={{ color: "grey" }}>
+                            | {fund.region}, {fund.strategy}
+                          </span>
                         </div>
-                      </div>
+                      ))
                     ) : (
-                      <span className={`status-display-pill ${fund.status}`}>
-                        {fund.status === 'accepted' ? 'accepted' : 'declined'}
-                      </span>
+                      <div style={{ padding: "8px 12px", color: "grey" }}>No results</div>
                     )}
-                    <button className="edit-button" onClick={() => { setEditableFund(fund); setIsEditing(true); }}>EDIT</button>
-                  </div>
-                </div>
-                <hr className="dashboard-divider" />
-                <div className="dashboard-grid">
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Tier</span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editableFund?.fundTier || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, fundTier: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.fundTier)}</span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Asset Class</span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editableFund?.assetClass || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, assetClass: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.assetClass)}</span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Target Net IRR</span>
-                    {isEditing ? (
-                      <input
-                        type="number"
-                        value={editableFund?.targetNetReturn || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, targetNetReturn: parseFloat(e.target.value) || 0 }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.targetNetReturn)}%</span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Geographic Focus</span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editableFund?.geographicFocus || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, geographicFocus: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.geographicFocus)}</span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Fund Size (AUD)</span>
-                    {isEditing ? (
-                      <input
-                        type="number"
-                        value={editableFund?.size || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, size: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">
-                        {fund.size ? `$${Number(fund.size).toLocaleString()}` : '–'}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Currency</span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editableFund?.currency || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, currency: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.currency)}</span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Region</span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editableFund?.region || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, region: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.region)}</span>
-                    )}
-                  </div>
-
-                  <div className="dashboard-field">
-                    <span className="dashboard-label">Manager Name</span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editableFund?.managerName || ''}
-                        onChange={(e) => setEditableFund(prev => ({ ...prev!, managerName: e.target.value }))}
-                        className="edit-input"
-                      />
-                    ) : (
-                      <span className="dashboard-value">{displayValue(fund.managerName)}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="dashboard-field-full">
-                  <span className="dashboard-label">Tier Justification</span>
-                  {isEditing ? (
-                    <textarea
-                      value={editableFund?.tierJustification || ''}
-                      onChange={(e) =>
-                        setEditableFund((prev) => ({ ...prev!, tierJustification: e.target.value }))
-                      }
-                      className="edit-textarea"
-                      rows={3}
-                    />
-                  ) : (
-                    <span className="dashboard-value">{displayValue(fund.tierJustification)}</span>
-                  )}
-                </div>
-
-                {isEditing && (
-                  <div className="edit-controls">
-                    <button onClick={handleSave}>Save</button>
-                    <button onClick={() => setIsEditing(false)}>Cancel</button>
                   </div>
                 )}
               </div>
-            )}
-
-            <div className="main">
-              <div className="section manager-header">
-              <img src="/database-icon.png" alt="Database" className="section-icon" />
-              <div className="section-text">
-                <h2>{fund?.name} — Engagement History</h2>
-                <p>Review previous meeting records and apply AI to summarise due diligence efforts for this fund.</p>
-              </div>
-            </div>
-
-            <div className="section">
-              <div className="manager-table-container">
-                <table className="manager-table">
-                  <thead>
-                    <tr>
-                      <th>Meeting Date</th>
-                      <th>GAF Attendees</th>
-                      <th>External Attendees</th>
-                      <th>General Notes</th>
-                      <th>Summarise</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {meetings.map((m) => (
-                      <tr key={m.id}>
-                        <td>{new Date(m.meetingDate).toLocaleDateString()}</td>
-                        <td>{m.gafAttendees}</td>
-                        <td>{m.externalAttendees}</td>
-                        <td>{formatNotes(m.notes)}</td>
-                        <td>
-                          <button className="summarise-button" onClick={() => handleSummarise(m)}>
-                            Summarise
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
+          <div className="top-bar-right">
+            <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
+          </div>
         </div>
+
+        {fund && (
+          <div className="section fund-dashboard">
+            <div className="fund-summary-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3>{fund?.name} — Summary</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {isEditing ? (
+                  <div className="status-toggle-wrapper">
+                    <div
+                      className={`status-toggle-switch ${editableFund?.status}`}
+                      onClick={() =>
+                        setEditableFund((prev) => ({
+                          ...prev!,
+                          status: prev?.status === 'accepted' ? 'declined' : 'accepted',
+                        }))
+                      }
+                    >
+                      <div className="status-toggle-option">accepted</div>
+                      <div className="status-toggle-option">declined</div>
+                      <div className={`status-toggle-slider ${editableFund?.status}`}></div>
+                    </div>
+                  </div>
+                ) : (
+                  <span className={`status-display-pill ${fund.status}`}>
+                    {fund.status === 'accepted' ? 'accepted' : 'declined'}
+                  </span>
+                )}
+                <button className="edit-button" onClick={() => { setEditableFund(fund); setIsEditing(true); }}>EDIT</button>
+              </div>
+            </div>
+            <hr className="dashboard-divider" />
+            <div className="dashboard-grid">
+              <div className="dashboard-field">
+                <span className="dashboard-label">Tier</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.fundTier || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, fundTier: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.fundTier)}</span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Asset Class</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.assetClass || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, assetClass: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.assetClass)}</span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Target Net IRR</span>
+                {isEditing ? (
+                  <input
+                    type="number"
+                    value={editableFund?.targetNetReturn || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, targetNetReturn: parseFloat(e.target.value) || 0 }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.targetNetReturn)}%</span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Geographic Focus</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.geographicFocus || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, geographicFocus: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.geographicFocus)}</span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Fund Size (AUD)</span>
+                {isEditing ? (
+                  <input
+                    type="number"
+                    value={editableFund?.size || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, size: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">
+                    {fund.size ? `$${Number(fund.size).toLocaleString()}` : '–'}
+                  </span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Currency</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.currency || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, currency: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.currency)}</span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Region</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.region || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, region: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.region)}</span>
+                )}
+              </div>
+
+              <div className="dashboard-field">
+                <span className="dashboard-label">Manager Name</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editableFund?.managerName || ''}
+                    onChange={(e) => setEditableFund(prev => ({ ...prev!, managerName: e.target.value }))}
+                    className="edit-input"
+                  />
+                ) : (
+                  <span className="dashboard-value">{displayValue(fund.managerName)}</span>
+                )}
+              </div>
+            </div>
+            <div className="dashboard-field-full">
+              <span className="dashboard-label">Tier Justification</span>
+              {isEditing ? (
+                <textarea
+                  value={editableFund?.tierJustification || ''}
+                  onChange={(e) =>
+                    setEditableFund((prev) => ({ ...prev!, tierJustification: e.target.value }))
+                  }
+                  className="edit-textarea"
+                  rows={3}
+                />
+              ) : (
+                <span className="dashboard-value">{displayValue(fund.tierJustification)}</span>
+              )}
+            </div>
+
+            {isEditing && (
+              <div className="edit-controls">
+                <button onClick={handleSave}>Save</button>
+                <button onClick={() => setIsEditing(false)}>Cancel</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="main">
+          <div className="section manager-header">
+          <img src="/database-icon.png" alt="Database" className="section-icon" />
+          <div className="section-text">
+            <h2>{fund?.name} — Engagement History</h2>
+            <p>Review previous meeting records and apply AI to summarise due diligence efforts for this fund.</p>
+          </div>
         </div>
-      </SignedIn>
-    </>
+
+        <div className="section">
+          <div className="manager-table-container">
+            <table className="manager-table">
+              <thead>
+                <tr>
+                  <th>Meeting Date</th>
+                  <th>GAF Attendees</th>
+                  <th>External Attendees</th>
+                  <th>General Notes</th>
+                  <th>Summarise</th>
+                </tr>
+              </thead>
+              <tbody>
+                {meetings.map((m) => (
+                  <tr key={m.id}>
+                    <td>{new Date(m.meetingDate).toLocaleDateString()}</td>
+                    <td>{m.gafAttendees}</td>
+                    <td>{m.externalAttendees}</td>
+                    <td>{formatNotes(m.notes)}</td>
+                    <td>
+                      <button className="summarise-button" onClick={() => handleSummarise(m)}>
+                        Summarise
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
   );
 }
