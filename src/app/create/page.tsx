@@ -204,7 +204,7 @@ export default function CreateFormPage() {
           <div className="top-bar-right">
             <button
               className="create-button"
-              style={{ backgroundColor: '#ef4444' }}
+              style={{ backgroundColor: '#ADD8E6', color: 'black' }}
               onClick={async () => {
                 await fetch('/api/signout', { method: 'POST' });
                 window.location.href = '/auth';

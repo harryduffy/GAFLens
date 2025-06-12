@@ -121,6 +121,7 @@ export default function FundMeetingsPage() {
 
       setFund((prev) => ({
         ...prev!,
+        name: updated.name,
         fundTier: updated.tier,
         size: updated.size,
         assetClass: updated.assetClass,
@@ -268,7 +269,7 @@ export default function FundMeetingsPage() {
           <div className="top-bar-right">
             <button
               className="create-button"
-              style={{ backgroundColor: '#ef4444' }}
+              style={{ backgroundColor: '#ADD8E6', color: 'black' }}
               onClick={async () => {
                 await fetch('/api/signout', { method: 'POST' });
                 window.location.href = '/auth';
@@ -283,7 +284,22 @@ export default function FundMeetingsPage() {
         {fund && (
           <div className="section fund-dashboard">
             <div className="fund-summary-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3>{fund?.name} — Summary</h3>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap'}}>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      value={editableFund?.name || ''}
+                      onChange={(e) => setEditableFund(prev => ({ ...prev!, name: e.target.value }))}
+                      className="edit-input fund-name-input"
+                      style={{ minWidth: '200px', flex: '0 0 auto', fontSize: '16px', fontWeight: '700'}}
+                    />
+                    <span style={{ whiteSpace: 'nowrap' }}>— Summary</span>
+                  </>
+                ) : (
+                  `${fund?.name} — Summary`
+                )}
+              </h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 {isEditing ? (
                   <div className="status-toggle-wrapper">

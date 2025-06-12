@@ -10,6 +10,7 @@ export async function PUT(req, { params }) {
     const updatedFund = await prisma.fund.update({
       where: { id },
       data: {
+        name: data.name,
         tier: data.fundTier,
         size: BigInt(data.size),
         assetClass: data.assetClass,
