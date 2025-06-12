@@ -18,11 +18,16 @@ model Fund {
   name               String
   strategy           String
   assetClass         String
-  targetNetReturn    Int
+  targetNetReturn    Float
   geographicFocus    String
   size               BigInt
   currency           String
   region             String
+  firstClose         DateTime
+  finalClose         DateTime
+  investmentPeriod   Float
+  fundTerm           Float
+  targetNetMOIC      Float
 
   tier               String? 
   tierJustification  String?     @db.Text
@@ -50,7 +55,7 @@ model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
   passwordHash String
-  totpSecret   String   // base32 string stored for MFA
+  totpSecret   String   
   mfaEnabled   Boolean  @default(false)
   createdAt    DateTime @default(now())
 }

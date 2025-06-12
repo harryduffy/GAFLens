@@ -434,12 +434,16 @@ body {
 
 .tools-left {
   display: flex;
-  gap: 18px;
+  gap: 10px;
 }
 
 .tool-link {
   cursor: pointer;
   user-select: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
 }
 
 .tool-link:hover {
@@ -543,6 +547,7 @@ body {
   background-color: #b76f34;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
+
 .fund-dashboard {
   margin: 0;
   margin-left: 20px;
@@ -553,79 +558,152 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Wrapper for the toggle switch */
 .status-toggle-wrapper {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-.status-toggle-switch {
+/* Multi-option toggle switch (3 options) */
+.status-toggle-switch-multi {
   position: relative;
-  width: 160px;
-  height: 30px;
+  width: 350px; /* Slightly wider to give more space */
+  height: 32px; /* Slightly taller for better text visibility */
   border: 2px solid #dee2e6;
   border-radius: 20px;
   display: flex;
   cursor: pointer;
   overflow: hidden;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px; /* Slightly larger font for better readability */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
 }
 
-.status-toggle-option {
+/* Each option within the toggle switch */
+.status-toggle-switch-multi .status-toggle-option {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
-  z-index: 2;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: capitalize;
   letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+  padding: 0 12px; /* Slightly more padding for balanced spacing */
+  min-width: 90px; /* Ensure minimum width to prevent text overflow */
+  color: #000; /* Black text color for visibility */
+  z-index: 2; /* Ensure text appears above slider */
 }
 
-.status-toggle-slider {
+/* Slider for each status option */
+.status-toggle-switch-multi .status-toggle-slider {
   position: absolute;
   top: 2px;
   bottom: 2px;
-  width: calc(50% - 2px);
+  width: calc(33.33% - 2px); /* 33.33% width for 3 options */
   border-radius: 18px;
   z-index: 1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Slider positions for each status */
 .status-toggle-slider.accepted {
   left: 2px;
-  color: rgb(9, 101, 43);
-  background:rgb(69, 214, 123);
+  background: rgb(69, 214, 123);
+}
+
+.status-toggle-slider.pending {
+  left: calc(33.33% - 2px);
+  background: rgb(251, 146, 60);
 }
 
 .status-toggle-slider.declined {
-  left: calc(50% - 2px);
-  color: rgb(141, 15, 15);
-  background:rgb(231, 93, 93);
+  left: calc(66.66% - 2px);
+  background: rgb(231, 93, 93);
 }
 
+/* Status display pill for non-editing mode */
 .status-display-pill {
-  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 16px;
   border-radius: 20px;
-  font-size: 13px;
   font-weight: 600;
+  font-size: 12px;
   text-transform: capitalize;
   letter-spacing: 0.3px;
-  transition: all 0.3s ease;
+  color: #000; /* Black text color for visibility */
+  min-width: 90px;
+  text-align: center;
 }
 
+/* Status-specific colors for display pill */
 .status-display-pill.accepted {
-  color: rgb(9, 101, 43);
-  background:rgb(69, 214, 123);
+  background: rgb(69, 214, 123);
+}
+
+.status-display-pill.pending {
+  background: rgb(251, 146, 60);
 }
 
 .status-display-pill.declined {
-  color: rgb(141, 15, 15);
-  background:rgb(231, 93, 93);
+  background: rgb(231, 93, 93);
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .status-toggle-switch-multi {
+    width: 320px;
+    font-size: 12px;
+  }
+
+  .status-toggle-option {
+    min-width: 80px;
+  }
+
+  .status-display-pill {
+    min-width: 80px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-toggle-switch-multi {
+    width: 280px;
+    font-size: 11px;
+  }
+
+  .status-toggle-option {
+    min-width: 70px;
+  }
+
+  .status-display-pill {
+    min-width: 70px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .status-toggle-switch-multi {
+    width: 260px;
+    font-size: 10px;
+  }
+
+  .status-toggle-option {
+    min-width: 60px;
+  }
+
+  .status-display-pill {
+    min-width: 60px;
+    font-size: 10px;
+  }
 }
 
 .fund-dashboard h3 {

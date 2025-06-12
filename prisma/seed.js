@@ -1,193 +1,146 @@
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
+// Helper function to generate random date between two dates
+function randomDate(start, end) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
+
+// Helper function to get random item from array
+function randomItem(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+// Helper function to generate random float between min and max
+function randomFloat(min, max, decimals = 2) {
+  return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
+}
+
 async function main() {
-  // Clear existing data (optional)
+  console.log('🌱 Starting seed...');
+
+  // Clear existing data
+  await prisma.fundMeetingDetail.deleteMany();
   await prisma.fund.deleteMany();
   await prisma.manager.deleteMany();
+  await prisma.user.deleteMany();
 
-  // Create managers first
-  const managers = await Promise.all([
-    prisma.manager.create({
-      data: {
-        managerName: 'Bain Capital',
-      },
-    }),
-    prisma.manager.create({
-      data: {
-        managerName: 'Hg',
-      },
-    }),
-    prisma.manager.create({
-      data: {
-        managerName: 'Goldman Sachs',
-      },
-    }),
-    prisma.manager.create({
-      data: {
-        managerName: 'Dawson Partners',
-      },
-    }),
-    prisma.manager.create({
-      data: {
-        managerName: 'Arlington',
-      },
-    }),
-  ]);
+  // Sample data arrays
+  const strategies = ['Growth Equity', 'Buyout', 'Venture Capital', 'Distressed', 'Real Estate', 'Infrastructure'];
+  const assetClasses = ['Private Equity', 'Real Estate', 'Infrastructure', 'Venture Capital', 'Hedge Fund'];
+  const regions = ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East', 'Global'];
+  const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
+  const geographicFocus = ['US', 'Europe', 'Asia', 'Global', 'Emerging Markets', 'APAC'];
+  const tiers = ['Tier 1', 'Tier 2', 'Tier 3'];
+  const statuses = ['accepted', 'pending', 'declined'];
 
-  // Helper function to randomly assign status
-  const getRandomStatus = () => Math.random() > 0.5 ? 'accepted' : 'declined';
-
-  // Asset class options
-  const assetClasses = ['Private Equity', 'Private Credit', 'Infrastructure', 'Venture Capital'];
-  const getRandomAssetClass = () => assetClasses[Math.floor(Math.random() * assetClasses.length)];
-
-  // Tier justification options
-  const tierJustifications = [
-    'Fund demonstrates strong historical performance with consistent returns above benchmark over multiple market cycles.',
-    'Manager has extensive experience in the asset class with a proven track record of risk-adjusted returns.',
-    'Investment strategy is well-defined with clear competitive advantages and differentiated approach to value creation.',
-    'Strong operational infrastructure and institutional-quality investment processes support scalable growth.',
-    'Fund size provides optimal balance between capacity constraints and ability to execute investment strategy effectively.',
-    'Geographic focus aligns with portfolio diversification objectives and offers attractive risk-return profile.',
-    'Management team has deep sector expertise and maintains strong relationships with key market participants.',
-    'Investment approach incorporates robust ESG considerations and sustainable investment practices.',
+  // Create Managers
+  const managers = [];
+  const managerNames = [
+    'Apollo Global Management',
+    'Blackstone Group',
+    'KKR & Co',
+    'Carlyle Group',
+    'TPG Inc',
+    'Bain Capital',
+    'Silver Lake Partners',
+    'Warburg Pincus',
+    'General Atlantic',
+    'Vista Equity Partners'
   ];
 
-  const getRandomJustification = () => tierJustifications[Math.floor(Math.random() * tierJustifications.length)];
+  for (const managerName of managerNames) {
+    const manager = await prisma.manager.create({
+      data: {
+        managerName: managerName,
+      },
+    });
+    managers.push(manager);
+  }
 
-  // Create funds
-  const funds = await Promise.all([
-    prisma.fund.create({
-      data: {
-        name: 'Global Equity Growth Fund',
-        strategy: 'Growth',
-        assetClass: 'Equity',
-        targetNetReturn: 12.5,
-        geographicFocus: 'Global',
-        size: '500000000', // $500M
-        currency: 'USD',
-        region: 'Global',
-        managerId: managers[0].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'Asia Pacific Value Fund',
-        strategy: 'Value',
-        assetClass: 'Equity',
-        targetNetReturn: 10.2,
-        geographicFocus: 'Asia Pacific',
-        size: '250000000', // $250M
-        currency: 'USD',
-        region: 'Asia Pacific',
-        managerId: managers[1].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'European High Yield Bond Fund',
-        strategy: 'Fixed Income',
-        assetClass: 'Fixed Income',
-        targetNetReturn: 6.8,
-        geographicFocus: 'Europe',
-        size: '750000000', // $750M
-        currency: 'EUR',
-        region: 'Europe',
-        managerId: managers[2].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'US Technology Innovation Fund',
-        strategy: 'Growth',
-        assetClass: 'Equity',
-        targetNetReturn: 15.3,
-        geographicFocus: 'North America',
-        size: '1000000000', // $1B
-        currency: 'USD',
-        region: 'North America',
-        managerId: managers[3].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'Emerging Markets Diversified Fund',
-        strategy: 'Diversified',
-        assetClass: 'Mixed',
-        targetNetReturn: 11.7,
-        geographicFocus: 'Emerging Markets',
-        size: '300000000', // $300M
-        currency: 'USD',
-        region: 'Emerging Markets',
-        managerId: managers[4].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'Australian Property Fund',
-        strategy: 'Real Estate',
-        assetClass: 'Real Estate',
-        targetNetReturn: 8.5,
-        geographicFocus: 'Australia',
-        size: '450000000', // $450M
-        currency: 'AUD',
-        region: 'Australia',
-        managerId: managers[0].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'Global Infrastructure Fund',
-        strategy: 'Infrastructure',
-        assetClass: 'Alternative',
-        targetNetReturn: 9.2,
-        geographicFocus: 'Global',
-        size: '800000000', // $800M
-        currency: 'USD',
-        region: 'Global',
-        managerId: managers[1].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-    prisma.fund.create({
-      data: {
-        name: 'Latin America Equity Fund',
-        strategy: 'Growth',
-        assetClass: 'Equity',
-        targetNetReturn: 13.1,
-        geographicFocus: 'Latin America',
-        size: '180000000', // $180M
-        currency: 'USD',
-        region: 'Latin America',
-        managerId: managers[2].id,
-        tierJustification: getRandomJustification(),
-        status: getRandomStatus(),
-      },
-    }),
-  ]);
+  // Create Funds
+  const funds = [];
+  for (let i = 0; i < 25; i++) {
+    const firstClose = randomDate(new Date(2020, 0, 1), new Date(2023, 11, 31));
+    const finalClose = randomDate(firstClose, new Date(firstClose.getTime() + 365 * 24 * 60 * 60 * 1000)); // Within 1 year of first close
 
-  console.log(`✅ Database seeded successfully!`);
-  console.log(`📊 Created ${managers.length} managers`);
-  console.log(`💼 Created ${funds.length} funds`);
+    const fund = await prisma.fund.create({
+      data: {
+        name: `${randomItem(managers).managerName} Fund ${i + 1}`,
+        strategy: randomItem(strategies),
+        assetClass: randomItem(assetClasses),
+        targetNetReturn: randomFloat(8.0, 25.0), // 8% to 25% return
+        geographicFocus: randomItem(geographicFocus),
+        size: BigInt(Math.floor(Math.random() * 5000000000) + 100000000), // $100M to $5B
+        currency: randomItem(currencies),
+        region: randomItem(regions),
+        firstClose: firstClose,
+        finalClose: finalClose,
+        investmentPeriod: Math.floor(Math.random() * 5) + 3, // 3-7 years
+        fundTerm: Math.floor(Math.random() * 5) + 8, // 8-12 years
+        targetNetMOIC: randomFloat(1.5, 4.0), // 1.5x to 4.0x multiple
+        tier: Math.random() > 0.3 ? randomItem(tiers) : null, // 70% chance of having a tier
+        tierJustification: Math.random() > 0.5 ? 'Strong track record and experienced team' : null,
+        status: randomItem(statuses),
+        managerId: randomItem(managers).id,
+      },
+    });
+    funds.push(fund);
+  }
+
+  // Create Fund Meeting Details
+  for (const fund of funds) {
+    const numMeetings = Math.floor(Math.random() * 4) + 1; // 1-4 meetings per fund
+    
+    for (let j = 0; j < numMeetings; j++) {
+      await prisma.fundMeetingDetail.create({
+        data: {
+          meetingDate: randomDate(fund.firstClose, new Date()),
+          fundSize: BigInt(Math.floor(Math.random() * 2000000000) + 500000000), // $500M to $2.5B
+          gafAttendees: `John Doe, Jane Smith${Math.random() > 0.5 ? ', Mike Johnson' : ''}`,
+          externalAttendees: `External Partner ${j + 1}, Investment Director`,
+          notes: `Meeting ${j + 1} notes: Discussed fund strategy, market conditions, and investment pipeline. ${Math.random() > 0.5 ? 'Follow-up required.' : 'Positive feedback received.'}`,
+          fundId: fund.id,
+        },
+      });
+    }
+  }
+
+  // Create Users
+  const users = [
+    {
+      email: 'admin@example.com',
+      passwordHash: '$2b$10$example.hash.here', // In real app, properly hash passwords
+      totpSecret: 'JBSWY3DPEHPK3PXP',
+      mfaEnabled: true,
+    },
+    {
+      email: 'user@example.com',
+      passwordHash: '$2b$10$example.hash.here',
+      totpSecret: 'JBSWY3DPEHPK3PXT',
+      mfaEnabled: false,
+    },
+  ];
+
+  for (const userData of users) {
+    await prisma.user.create({
+      data: userData,
+    });
+  }
+
+  console.log('✅ Seed completed!');
+  console.log(`📊 Created:`);
+  console.log(`   - ${managers.length} managers`);
+  console.log(`   - ${funds.length} funds`);
+  console.log(`   - ${users.length} users`);
+  console.log(`   - Multiple fund meeting details`);
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    console.error('❌ Seed failed:');
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

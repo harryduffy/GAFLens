@@ -27,7 +27,7 @@ type FundMeta = {
   region: string;
   managerName: string;
   tierJustification?: string;
-  status?: 'accepted' | 'declined';
+  status?: 'accepted' | 'declined' | 'pending';
 };
 
 export default function FundMeetingsPage() {
@@ -303,23 +303,26 @@ export default function FundMeetingsPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 {isEditing ? (
                   <div className="status-toggle-wrapper">
-                    <div
-                      className={`status-toggle-switch ${editableFund?.status}`}
-                      onClick={() =>
-                        setEditableFund((prev) => ({
-                          ...prev!,
-                          status: prev?.status === 'accepted' ? 'declined' : 'accepted',
-                        }))
-                      }
-                    >
-                      <div className="status-toggle-option">accepted</div>
-                      <div className="status-toggle-option">declined</div>
-                      <div className={`status-toggle-slider ${editableFund?.status}`}></div>
+                    <div className={`status-toggle-switch-multi ${editableFund?.status?.toLowerCase().replace(/ /g, '-')}`}>
+                      {['accepted', 'pending', 'declined'].map((status) => (
+                        <div
+                          key={status}
+                          className="status-toggle-option"
+                          onClick={() =>
+                            setEditableFund((prev) => 
+                              prev ? { ...prev, status: status } : null
+                            )
+                          }
+                        >
+                          <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                        </div>
+                      ))}
+                      <div className={`status-toggle-slider ${editableFund?.status?.toLowerCase().replace(/ /g, '-')}`}></div>
                     </div>
                   </div>
                 ) : (
-                  <span className={`status-display-pill ${fund.status}`}>
-                    {fund.status === 'accepted' ? 'accepted' : 'declined'}
+                  <span className={`status-display-pill ${fund.status?.toLowerCase().replace(/ /g, '-') || 'unknown'}`}>
+                    {fund.status}
                   </span>
                 )}
                 <button className="edit-button" onClick={() => { setEditableFund(fund); setIsEditing(true); }}>EDIT</button>

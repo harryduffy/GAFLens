@@ -12,13 +12,19 @@ CREATE TABLE `Fund` (
     `name` VARCHAR(191) NOT NULL,
     `strategy` VARCHAR(191) NOT NULL,
     `assetClass` VARCHAR(191) NOT NULL,
-    `targetNetReturn` INTEGER NOT NULL,
+    `targetNetReturn` DOUBLE NOT NULL,
     `geographicFocus` VARCHAR(191) NOT NULL,
     `size` BIGINT NOT NULL,
     `currency` VARCHAR(191) NOT NULL,
     `region` VARCHAR(191) NOT NULL,
+    `firstClose` DATETIME(3) NOT NULL,
+    `finalClose` DATETIME(3) NOT NULL,
+    `investmentPeriod` DOUBLE NOT NULL,
+    `fundTerm` DOUBLE NOT NULL,
+    `targetNetMOIC` DOUBLE NOT NULL,
     `tier` VARCHAR(191) NULL,
-    `tierJustification` VARCHAR(191) NULL,
+    `tierJustification` TEXT NULL,
+    `status` VARCHAR(191) NULL DEFAULT 'declined',
     `managerId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -34,6 +40,19 @@ CREATE TABLE `FundMeetingDetail` (
     `notes` VARCHAR(191) NOT NULL,
     `fundId` INTEGER NOT NULL,
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `User` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(191) NOT NULL,
+    `passwordHash` VARCHAR(191) NOT NULL,
+    `totpSecret` VARCHAR(191) NOT NULL,
+    `mfaEnabled` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

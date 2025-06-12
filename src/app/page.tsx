@@ -205,8 +205,14 @@ export default function Home() {
         <div className="section">
           <div className="tools-bar">
             <div className="tools-left">
-              <span className="tool-link">Filter</span>
-              <span className="tool-link" onClick={handleExportToXLSX} style={{ cursor: 'pointer' }}>
+              <button 
+                className="tool-link" 
+                onClick={() => router.push('/add-fund')}
+                style={{ marginRight: '16px' }}
+              >
+                Add Fund
+              </button>
+              <span className="tool-link" onClick={handleExportToXLSX}>
                 Export
               </span>
             </div>
@@ -244,7 +250,9 @@ export default function Home() {
                     <td>{f.region || '–'}</td>
                     <td>
                       {f.status ? (
-                        <span className={`status-capsule ${f.status.toLowerCase()}`}>{f.status}</span>
+                        <div style={{borderRadius: '12px', height: '18px'}} className={`status-toggle-slider ${f.status.toLowerCase()}`}>
+                          <span className={`status-toggle-slider ${f.status.toLowerCase()}`}>{f.status}</span>
+                        </div>
                       ) : (
                         '–'
                       )}
