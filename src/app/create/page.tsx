@@ -202,6 +202,16 @@ export default function CreateFormPage() {
             </div>
           </div>
           <div className="top-bar-right">
+            <button
+              className="create-button"
+              style={{ backgroundColor: '#ef4444' }}
+              onClick={async () => {
+                await fetch('/api/signout', { method: 'POST' });
+                window.location.href = '/auth';
+              }}
+            >
+              Sign Out
+            </button>
             <button className="create-button" onClick={() => router.back()} style={{ borderRadius: '8px', width: '91px' }}>
               ← Back
             </button>

@@ -266,6 +266,16 @@ export default function FundMeetingsPage() {
             </div>
           </div>
           <div className="top-bar-right">
+            <button
+              className="create-button"
+              style={{ backgroundColor: '#ef4444' }}
+              onClick={async () => {
+                await fetch('/api/signout', { method: 'POST' });
+                window.location.href = '/auth';
+              }}
+            >
+              Sign Out
+            </button>
             <button className="create-button" onClick={() => router.push('/create')}>Create Form</button>
           </div>
         </div>
