@@ -1,0 +1,195 @@
+@keyframes shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.background-style {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(-45deg, #102948, #1a3a5c, #cb8548, #102948);
+    background-size: 400% 400%;
+    animation: shimmer 8s ease-in-out infinite;
+    padding: 1rem;
+}
+
+.form-modal {
+    background-color: #fdf1d8;
+    box-shadow: 0 25px 50px -12px rgba(16, 41, 72, 0.4);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 24rem;
+    border: 1px solid rgba(203, 133, 72, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.form-heading {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+    background-image: linear-gradient(135deg, #102948, #cb8548);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    border: 1px solid #fecaca;
+}
+
+.credentials-text {
+    color: #102948;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+.input-label-cont {
+    display: block;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.input-label {
+    color: #102948;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.input-field {
+    padding: 0.75rem;
+    width: 100%;
+    border-radius: 0.5rem;
+    outline: none;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in-out;
+    background-color: white;
+}
+
+.input-field-valid {
+    border: 2px solid #cb8548;
+}
+
+.input-field-invalid {
+    border: 2px solid #ef4444;
+}
+
+.show-password {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    color: #cb8548;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+
+.password-requirements {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+}
+
+.pass-req-heading {
+    color: #102948;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.submit-button {
+    width: 100%;
+    color: #fdf1d8;
+    font-weight: 600;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.submit-button-valid {
+    background: linear-gradient(135deg, #102948 0%, #cb8548 100%);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(16, 41, 72, 0.4);
+    opacity: 1;
+}
+
+.submit-button-invalid {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    cursor: not-allowed;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+    opacity: 0.6;
+}
+
+.back-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.flex-button {
+    flex: 1;
+    background: transparent;
+    color: #102948;
+    font-weight: 500;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid #cb8548;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.code-button {
+    width: 100%;
+    color: #fdf1d8;
+    font-weight: 600;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.code-button.disabled {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    cursor: not-allowed;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+    opacity: 0.6;
+}
+
+.code-button.enabled {
+  background: linear-gradient(135deg, #102948 0%, #cb8548 100%);
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(16, 41, 72, 0.4);
+  opacity: 1;
+}
